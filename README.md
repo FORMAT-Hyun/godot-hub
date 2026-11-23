@@ -4,7 +4,23 @@
 화면 배치는 유니티 허브를 따르고, 색·폰트·아이콘은 고도 에디터 스타일을 씁니다.
 기획 내용은 [PLAN.md](PLAN.md)에 있어요.
 
-## 실행
+## 설치
+
+[릴리즈 페이지](https://github.com/FORMAT-Hyun/godot-hub/releases/latest)에서 `GodotHub-<버전>-Setup.exe`를 받아 실행하세요.
+관리자 권한 없이 내 계정에 설치되고, 시작 메뉴(선택하면 바탕화면)에 바로가기가 생겨요.
+제거는 Windows 설정 > 앱에서 할 수 있어요. 설치 없이 쓰려면 `GodotHub-<버전>-portable.zip`을 받아 압축을 풀고 실행하세요.
+
+설치 파일 만들기 (Inno Setup 6 필요):
+
+```powershell
+& "D:\Godot_v4.7-stable_win64.exe\Godot_v4.7-stable_win64_console.exe" --headless --path "D:\고도 허브" --export-release "Windows Desktop" "D:\고도 허브\build\GodotHub.exe"
+```
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe" "D:\고도 허브\installer\GodotHub.iss"
+```
+
+## 소스에서 실행
 
 1. Godot 4.7 에디터로 이 폴더를 열고 F5를 누릅니다.
    (처음 한 번은 에디터로 열거나 `--import`를 실행해야 클래스 이름이 등록돼요.)

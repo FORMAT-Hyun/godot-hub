@@ -7,7 +7,7 @@ signal settings_changed
 signal running_changed
 signal toast(message: String)
 
-const HUB_VERSION := "0.1.0"
+const HUB_VERSION := "0.1.1"
 const SCAN_MAX_DEPTH := 5
 const SCAN_SKIP := ["node_modules", "$RECYCLE.BIN", "System Volume Information", "Windows",
 	"Program Files", "Program Files (x86)", "AppData", "Library", "build", "addons"]
