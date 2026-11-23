@@ -142,13 +142,14 @@ func _build_top_bar() -> Control:
 	left.size_flags_stretch_ratio = 1.0
 	left.add_theme_constant_override("separation", 6)
 	hb.add_child(left)
-	var logo := HubUI.icon_rect(HubIcons.icon("logo", 24), 24)
+	# 고도 프로젝트 매니저와 같은 로고 (아이콘 + GODOT 글자)
+	var logo := TextureRect.new()
+	logo.texture = HubIcons.icon("title_logo")
+	logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	logo.custom_minimum_size = Vector2(100, 24)
 	logo.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	left.add_child(logo)
-	var title := HubUI.label("GODOT", "TitleLabel")
-	title.add_theme_font_size_override("font_size", 19)
-	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	left.add_child(title)
 	var hub := HubUI.label("HUB", "DimLabel")
 	hub.add_theme_font_size_override("font_size", 13)
 	hub.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -247,6 +248,11 @@ func _notification(what: int) -> void:
 ## 개발용: --hub-select=N 이면 N번째 프로젝트를 선택해 둔다
 func _select_row(idx: int) -> void:
 	await get_tree().process_frame
+	if _pages.installs.visible:
+		var insts := Hub.sorted_installs()
+		if idx < insts.size():
+			_pages.installs._select(insts[idx].id)
+		return
 	var items: Array = _pages.projects._sorted_projects()
 	if idx < items.size():
 		_pages.projects._select(items[idx].rec.path)

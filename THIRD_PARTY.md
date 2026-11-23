@@ -8,7 +8,8 @@
 
 ## Godot 로고 / 기본 프로젝트 아이콘
 
-`icon.svg`와 로고 아이콘(`Godot.svg`)은 Andrea Calabró가 만든 Godot 로고로,
+`icon.svg`, 로고 아이콘(`Godot.svg`), 위쪽 바의 로고 글자(`TitleBarLogo.svg`, 4.7-stable, 색 그대로)는
+Andrea Calabró가 만든 Godot 로고로,
 CC BY 4.0 라이선스(https://creativecommons.org/licenses/by/4.0/)를 따릅니다.
 Godot 이름과 로고는 Godot Foundation의 상표입니다. 이 런처는 비공식 프로그램이에요.
 

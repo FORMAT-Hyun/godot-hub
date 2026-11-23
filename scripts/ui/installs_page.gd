@@ -11,6 +11,9 @@ var _file_dialog: FileDialog
 var _install_dialog: InstallEditorDialog
 var _editor_settings_dialog: EditorSettingsDialog
 var _refresh_queued := false
+var _selected := ""  # 선택한 에디터 id
+var _rows := {}  # id -> 줄
+var _side := {}  # 오른쪽 메뉴 버튼
 
 
 func _ready() -> void:
@@ -56,10 +59,16 @@ func _ready() -> void:
 			_refresh())
 		toolbar.add_child(b)
 
+	# ── 본문: 왼쪽 목록 칸 + 오른쪽 메뉴 (프로젝트 탭과 같은 배치) ──
+	var main := HBoxContainer.new()
+	main.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	main.add_theme_constant_override("separation", 6)
+	root.add_child(main)
 	var list_panel := PanelContainer.new()
 	list_panel.theme_type_variation = "ListPanel"
-	list_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	root.add_child(list_panel)
+	list_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	main.add_child(list_panel)
+	main.add_child(_build_side_menu())
 	var body := Control.new()
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	list_panel.add_child(body)
@@ -69,7 +78,7 @@ func _ready() -> void:
 	body.add_child(scroll)
 	_list = VBoxContainer.new()
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_list.add_theme_constant_override("separation", 6)
+	_list.add_theme_constant_override("separation", 2)
 	scroll.add_child(_list)
 
 	_empty = CenterContainer.new()
@@ -144,6 +153,9 @@ func _refresh() -> void:
 	_refresh_queued = false
 	for c in _list.get_children():
 		c.queue_free()
+	_rows.clear()
+	if Hub.find_install(_selected).is_empty():
+		_selected = ""
 	var shown := 0
 	for inst in Hub.sorted_installs():
 		var stable := GodotVersion.is_stable(inst.get("version", ""))
@@ -158,60 +170,128 @@ func _refresh() -> void:
 			"mono":
 				if not mono:
 					continue
-		_list.add_child(_build_row(inst))
+		var row := _build_row(inst)
+		_list.add_child(row)
+		_rows[inst.id] = row
 		shown += 1
 	_empty.visible = Hub.installs.is_empty()
 	if shown == 0 and not Hub.installs.is_empty():
 		var l := HubUI.label("이 조건에 맞는 에디터가 없어요.", "DimLabel")
 		_list.add_child(l)
+	_select(_selected)
 
+
+# ─────────────────────────── 목록 줄 (고도 프로젝트 매니저 줄 모양) ───────────────────────────
 
 func _build_row(inst: Dictionary) -> Control:
 	var row := PanelContainer.new()
-	row.theme_type_variation = "RowPanel"
+	row.theme_type_variation = "PmRow"
+	row.mouse_filter = Control.MOUSE_FILTER_STOP
 	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 14)
+	hb.add_theme_constant_override("separation", 12)
+	hb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(hb)
 	var exists := FileAccess.file_exists(str(inst.get("exe", "")))
 	var mono := bool(inst.get("mono", false))
-	hb.add_child(HubUI.icon_rect(HubIcons.icon("logo", 34), 34))
+	var is_default: bool = Hub.settings.get("default_editor", "") == inst.id
+
+	# ☆ = 기본 버전 (프로젝트 탭의 즐겨찾기 자리)
+	var star := HubUI.flat_icon_button("star_fill" if is_default else "star", "기본 버전" if is_default else "기본 버전으로 설정")
+	star.custom_minimum_size = Vector2(26, 26)
+	star.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	if is_default:
+		for c in ["icon_normal_color", "icon_hover_color", "icon_pressed_color"]:
+			star.add_theme_color_override(c, HubTheme.WARNING)
+	star.pressed.connect(func() -> void: Hub.set_default_install(inst.id))
+	hb.add_child(star)
+
+	var icon := HubUI.icon_rect(HubIcons.icon("logo", 56), 56)
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	if not exists:
+		icon.modulate = Color(1, 1, 1, 0.35)
+	hb.add_child(icon)
 
 	var vb := VBoxContainer.new()
 	vb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vb.add_theme_constant_override("separation", 2)
+	vb.alignment = BoxContainer.ALIGNMENT_CENTER
+	vb.add_theme_constant_override("separation", 10)
+	vb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hb.add_child(vb)
 	var title_row := HBoxContainer.new()
 	title_row.add_theme_constant_override("separation", 8)
+	title_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vb.add_child(title_row)
 	var version := str(inst.get("version", ""))
-	title_row.add_child(HubUI.label("Godot " + (version if version != "" else "(버전 알 수 없음)"), "TitleLabel"))
+	var name_lbl := HubUI.label("Godot " + (version if version != "" else "(버전 알 수 없음)"), "TitleLabel")
+	if not exists:
+		name_lbl.add_theme_color_override("font_color", HubTheme.TEXT_DISABLED)
+	title_row.add_child(name_lbl)
 	if mono:
 		title_row.add_child(HubUI.tag(".NET", HubTheme.DOTNET))
 	if version != "" and not GodotVersion.is_stable(version):
 		title_row.add_child(HubUI.tag("프리릴리스", HubTheme.WARNING))
-	if Hub.settings.get("default_editor", "") == inst.id:
+	if is_default:
 		title_row.add_child(HubUI.tag("기본", HubTheme.ACCENT))
 	if not exists:
 		title_row.add_child(HubUI.tag("파일 없음", HubTheme.ERROR))
-	# 받은 날짜 · 개발자 (경로 같은 긴 정보는 보여 주지 않는다. 폴더는 ⚙ > 설치 폴더 열기)
+
+	# 둘째 줄: 개발자 · 종류 ... 받은 날짜 (매니저의 경로 · 수정 시각 자리)
+	var info_row := HBoxContainer.new()
+	info_row.add_theme_constant_override("separation", 8)
+	info_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vb.add_child(info_row)
+	var cube := HubUI.icon_rect(HubIcons.icon("cube"), 16, HubTheme.TEXT_DIM)
+	cube.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	info_row.add_child(cube)
+	var dev := HubUI.label("Godot Engine  ·  " + (".NET" if mono else "표준"), "DimLabel")
+	dev.add_theme_font_size_override("font_size", 13)
+	dev.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info_row.add_child(dev)
 	var added := Hub.install_added(inst)
 	var bias := int(Time.get_time_zone_from_system().get("bias", 0))
-	var date := Time.get_date_string_from_unix_time(added + bias * 60) if added > 0 else "날짜 모름"
-	vb.add_child(HubUI.label("%s  ·  Godot Engine" % date, "DimLabel"))
-	row.custom_minimum_size.y = 72  # 글자를 줄여도 줄 높이는 그대로
-	vb.alignment = BoxContainer.ALIGNMENT_CENTER
-	vb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	title_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var date_text := Time.get_datetime_string_from_unix_time(added + bias * 60, true) if added > 0 else "날짜 모름"
+	var date := HubUI.label(date_text, "DimLabel", ProjectRow.DATE_WIDTH)
+	date.add_theme_font_size_override("font_size", 13)
+	date.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	info_row.add_child(date)
 
-	var gear := MenuButton.new()
-	gear.icon = HubIcons.icon("gear")
-	gear.theme_type_variation = "FlatButton"
-	gear.flat = false
-	gear.focus_mode = Control.FOCUS_NONE
-	gear.tooltip_text = "관리"
-	gear.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var pm := gear.get_popup()
+	# 마우스: 올리면 강조, 클릭 선택, 두 번 클릭 속성, 오른쪽 클릭 메뉴
+	var id: String = inst.id
+	row.mouse_entered.connect(func() -> void: _style_row(id, true))
+	row.mouse_exited.connect(func() -> void: _style_row(id, false))
+	row.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed:
+			if event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+				_select(id)
+				_show_properties(inst)
+			elif event.button_index == MOUSE_BUTTON_LEFT:
+				_select(id)
+			elif event.button_index == MOUSE_BUTTON_RIGHT:
+				_select(id)
+				_popup_menu(inst))
+	return row
+
+
+func _style_row(id: String, hover: bool) -> void:
+	var row: Control = _rows.get(id)
+	if row == null or not is_instance_valid(row):
+		return
+	row.set_meta("hover", hover)
+	if id == _selected:
+		row.theme_type_variation = "PmRowSelected"
+	else:
+		row.theme_type_variation = "PmRowHover" if hover else "PmRow"
+
+
+func _select(id: String) -> void:
+	_selected = id
+	for k in _rows:
+		_style_row(k, bool(_rows[k].get_meta("hover", false)))
+	_update_side_menu()
+
+
+func _popup_menu(inst: Dictionary) -> void:
+	var pm := PopupMenu.new()
 	pm.add_icon_item(HubIcons.icon("gear"), "에디터 설정 열기", 0)
 	pm.add_icon_item(HubIcons.icon("star"), "기본 버전으로 설정", 1)
 	pm.set_item_disabled(pm.get_item_index(1), Hub.settings.get("default_editor", "") == inst.id)
@@ -223,8 +303,58 @@ func _build_row(inst: Dictionary) -> Control:
 	pm.add_separator()
 	pm.add_icon_item(HubIcons.icon("trash"), "제거" if inst.get("managed", false) else "목록에서 제거", 5)
 	pm.id_pressed.connect(_on_menu.bind(inst))
-	hb.add_child(gear)
-	return row
+	pm.popup_hide.connect(pm.queue_free)
+	add_child(pm)
+	pm.popup(Rect2i(Vector2i(DisplayServer.mouse_get_position()), Vector2i.ZERO))
+
+
+# ─────────────────────────── 오른쪽 메뉴 ───────────────────────────
+
+func _build_side_menu() -> Control:
+	var side := VBoxContainer.new()
+	side.custom_minimum_size.x = 176
+	side.add_theme_constant_override("separation", 6)
+	_side.settings = _side_button(side, "에디터 설정", "gear", 0)
+	_side.default = _side_button(side, "기본 버전으로", "star", 1)
+	_side.sc = _side_button(side, "독립 모드", "check", 2)
+	_side.sc.tooltip_text = "에디터 설정을 이 버전 폴더 안에 따로 저장해요 (._sc_)"
+	_side.folder = _side_button(side, "설치 폴더 열기", "folder", 4)
+	_side.props = _side_button(side, "속성", "more", 6)
+	_side.remove = _side_button(side, "제거", "trash", 5)
+	return side
+
+
+func _side_button(parent: Control, text: String, icon_name: String, menu_id: int) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.icon = HubIcons.icon(icon_name)
+	b.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	b.focus_mode = Control.FOCUS_NONE
+	b.pressed.connect(func() -> void:
+		var inst := Hub.find_install(_selected)
+		if not inst.is_empty():
+			_on_menu(menu_id, inst))
+	parent.add_child(b)
+	return b
+
+
+func _update_side_menu() -> void:
+	if _side.is_empty():
+		return
+	var inst := Hub.find_install(_selected)
+	var has := not inst.is_empty()
+	var exists := has and FileAccess.file_exists(str(inst.get("exe", "")))
+	for k in _side:
+		_side[k].disabled = not has
+	_side.settings.disabled = not exists
+	_side.folder.disabled = not exists
+	_side.sc.disabled = not exists
+	_side.default.disabled = not has or Hub.settings.get("default_editor", "") == _selected
+	var sc: bool = has and Hub.is_self_contained(inst)
+	_side.sc.text = "독립 모드: 켜짐" if sc else "독립 모드: 꺼짐"
+	_side.sc.icon = HubIcons.icon("check" if sc else "close")
+	_side.remove.text = "제거" if not has or inst.get("managed", false) else "목록에서 제거"
 
 
 func _on_menu(id: int, inst: Dictionary) -> void:
