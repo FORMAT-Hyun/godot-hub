@@ -1,7 +1,7 @@
 # Godot Hub
 
 고도 엔진 프로젝트와 에디터 버전을 한 곳에서 관리하는 런처입니다. Godot 4.7로 만들었어요.
-화면 배치는 유니티 허브를 따르고, 색·폰트·아이콘은 고도 에디터 스타일을 씁니다.
+화면은 고도 프로젝트 매니저와 같은 배치(위쪽 탭: 프로젝트 · 설치)이고, 색·폰트·아이콘도 고도 스타일을 씁니다.
 기획 내용은 [PLAN.md](PLAN.md)에 있어요.
 
 ## 설치
@@ -54,7 +54,7 @@
 |------|------|
 | `--hub-data=<폴더>` | 실제 데이터 대신 테스트용 데이터 폴더 사용 |
 | `--hub-page=installs` | 시작할 페이지 (projects / installs) |
-| `--hub-dialog=new` | 시작하자마자 창 열기 (new / install / settings) |
+| `--hub-dialog=new` | 시작하자마자 창 열기 (new / install / settings / editor-settings / properties) |
 | `--hub-es-search=<검색어>` | `--hub-dialog=editor-settings`와 함께: 설정 창에 검색어를 넣어 둠 |
 | `--hub-screenshot=<png>` | 화면을 PNG로 저장하고 종료 (`--hub-shot-delay=초`) |
 

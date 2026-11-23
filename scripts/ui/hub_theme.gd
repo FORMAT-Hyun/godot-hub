@@ -174,6 +174,34 @@ static func _build() -> Theme:
 	_panel_variation(t, "CardPanel", box(PANEL, 8, BORDER, 1, 14, 12))
 	_panel_variation(t, "CardPanelHover", box(ROW_HOVER, 8, BORDER.lightened(0.15), 1, 14, 12))
 	_panel_variation(t, "CardPanelSelected", box(Color(PRIMARY, 0.18), 8, ACCENT, 2, 14, 12))
+	# 고도 프로젝트 매니저 배치: 위쪽 탭 바 · 목록 칸 · 아래 상태 줄
+	var top := box(SIDEBAR, 0, Color.TRANSPARENT, 0, 14, 6)
+	top.border_width_bottom = 1
+	top.border_color = BORDER
+	_panel_variation(t, "TopBarPanel", top)
+	var status := box(SIDEBAR, 0, Color.TRANSPARENT, 0, 12, 3)
+	status.border_width_top = 1
+	status.border_color = BORDER
+	_panel_variation(t, "StatusBarPanel", status)
+	_panel_variation(t, "ListPanel", box(FIELD, 4, BORDER, 1, 4, 4))
+	_panel_variation(t, "PmRow", box(Color.TRANSPARENT, 4, Color.TRANSPARENT, 0, 10, 6))
+	_panel_variation(t, "PmRowHover", box(Color(1, 1, 1, 0.05), 4, Color.TRANSPARENT, 0, 10, 6))
+	_panel_variation(t, "PmRowSelected", box(Color(ACCENT, 0.14), 4, Color(ACCENT, 0.45), 1, 10, 6))
+	t.set_type_variation("TopTabButton", "Button")
+	var tab_on := box(Color.TRANSPARENT, 4, Color.TRANSPARENT, 0, 10, 5)
+	_button_styles(t, "TopTabButton",
+		box(Color.TRANSPARENT, 4, Color.TRANSPARENT, 0, 10, 5),
+		box(Color(1, 1, 1, 0.06), 4, Color.TRANSPARENT, 0, 10, 5),
+		tab_on,
+		box(Color.TRANSPARENT, 4, Color.TRANSPARENT, 0, 10, 5),
+		StyleBoxEmpty.new(), TEXT, Color.WHITE)
+	t.set_stylebox("hover_pressed", "TopTabButton", tab_on)
+	for c in ["font_pressed_color", "font_hover_pressed_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+		t.set_color(c, "TopTabButton", ACCENT)
+	t.set_font("font", "TopTabButton", bold_font)
+	t.set_font_size("font_size", "TopTabButton", 15)
+	t.set_constant("h_separation", "TopTabButton", 6)
+
 	var toast := box(PANEL, 6, BORDER, 1, 16, 10)
 	toast.shadow_color = Color(0, 0, 0, 0.45)
 	toast.shadow_size = 10

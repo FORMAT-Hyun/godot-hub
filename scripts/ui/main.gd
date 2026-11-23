@@ -2,8 +2,8 @@ extends Control
 ## 허브 메인 화면: 왼쪽 사이드바(유니티 허브 배치) + 오른쪽 페이지
 
 const PAGES := [
-	{"id": "projects", "title": "프로젝트", "icon": "folder"},
-	{"id": "installs", "title": "설치", "icon": "cube"},
+	{"id": "projects", "title": "프로젝트", "icon": "project_list"},
+	{"id": "installs", "title": "설치", "icon": "download"},
 ]
 const BASE_SIZE := Vector2(1180, 720)
 const MIN_SIZE := Vector2(940, 580)
@@ -56,6 +56,9 @@ func _ready() -> void:
 			_pages.installs.open_install_dialog()
 		"settings":
 			_open_settings()
+		"properties":
+			if not Hub.installs.is_empty():
+				_pages.installs._show_properties(Hub.sorted_installs()[0])
 		"editor-settings":
 			if not Hub.installs.is_empty():
 				_pages.installs.open_editor_settings(Hub.sorted_installs()[0], es_search)
@@ -64,21 +67,48 @@ func _ready() -> void:
 
 
 func _build() -> void:
-	var root := HBoxContainer.new()
+	# 고도 프로젝트 매니저 배치: 위쪽 탭 바 / 페이지 / 아래 상태 줄
+	var root := VBoxContainer.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_theme_constant_override("separation", 0)
 	add_child(root)
-	root.add_child(_build_sidebar())
+	root.add_child(_build_top_bar())
 
 	var content := PanelContainer.new()
 	content.theme_type_variation = "ContentPanel"
-	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	root.add_child(content)
 	_pages.projects = ProjectsPage.new()
 	_pages.installs = InstallsPage.new()
 	for id in _pages:
 		content.add_child(_pages[id])
 	_pages.projects.go_to_installs.connect(show_page.bind("installs"))
+
+	var status := PanelContainer.new()
+	status.theme_type_variation = "StatusBarPanel"
+	var sh := HBoxContainer.new()
+	status.add_child(sh)
+	sh.add_child(HubUI.spacer())
+	sh.add_child(HubUI.label("Godot Hub v" + Hub.HUB_VERSION, "DimLabel"))
+	root.add_child(status)
+
+	# 다운로드 진행 상황은 왼쪽 아래에 떠 있게
+	var dl := MarginContainer.new()
+	dl.anchor_top = 1.0
+	dl.anchor_bottom = 1.0
+	dl.offset_left = 12
+	dl.offset_right = 332
+	dl.offset_bottom = -34
+	dl.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	dl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var dl_panel := PanelContainer.new()
+	dl_panel.theme_type_variation = "ToastPanel"
+	var downloads := DownloadsPanel.new()
+	dl_panel.add_child(downloads)
+	downloads.visibility_changed.connect(func() -> void: dl_panel.visible = downloads.visible)
+	dl.add_child(dl_panel)
+	add_child(dl)
+	dl_panel.visible = downloads.visible
 
 	# 오른쪽 아래 알림
 	_toast = PanelContainer.new()
@@ -100,26 +130,34 @@ func _build() -> void:
 	add_child(_toast)
 
 
-func _build_sidebar() -> Control:
+func _build_top_bar() -> Control:
 	var panel := PanelContainer.new()
-	panel.theme_type_variation = "SidebarPanel"
-	panel.custom_minimum_size.x = 224
-	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 4)
-	panel.add_child(vb)
+	panel.theme_type_variation = "TopBarPanel"
+	var hb := HBoxContainer.new()
+	panel.add_child(hb)
 
-	var top := HBoxContainer.new()
-	top.add_theme_constant_override("separation", 10)
-	vb.add_child(top)
-	top.add_child(HubUI.icon_rect(HubIcons.icon("logo", 28), 28))
-	var title := HubUI.label("Godot Hub", "TitleLabel")
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(title)
-	var gear := HubUI.flat_icon_button("gear", "설정")
-	gear.pressed.connect(_open_settings)
-	top.add_child(gear)
-	vb.add_child(HubUI.vspace(16))
+	# 왼쪽: 로고 · 이름 (가운데 탭이 정확히 가운데 오도록 양쪽을 같은 비율로 늘린다)
+	var left := HBoxContainer.new()
+	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	left.size_flags_stretch_ratio = 1.0
+	left.add_theme_constant_override("separation", 6)
+	hb.add_child(left)
+	var logo := HubUI.icon_rect(HubIcons.icon("logo", 24), 24)
+	logo.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	left.add_child(logo)
+	var title := HubUI.label("GODOT", "TitleLabel")
+	title.add_theme_font_size_override("font_size", 19)
+	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	left.add_child(title)
+	var hub := HubUI.label("HUB", "DimLabel")
+	hub.add_theme_font_size_override("font_size", 13)
+	hub.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	left.add_child(hub)
 
+	# 가운데: 프로젝트 · 설치 탭
+	var center := HBoxContainer.new()
+	center.add_theme_constant_override("separation", 12)
+	hb.add_child(center)
 	var group := ButtonGroup.new()
 	for p in PAGES:
 		var b := Button.new()
@@ -127,19 +165,25 @@ func _build_sidebar() -> Control:
 		b.icon = HubIcons.icon(p.icon)
 		b.toggle_mode = true
 		b.button_group = group
-		b.theme_type_variation = "SidebarButton"
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.theme_type_variation = "TopTabButton"
 		b.focus_mode = Control.FOCUS_NONE
 		b.pressed.connect(show_page.bind(p.id))
-		vb.add_child(b)
+		center.add_child(b)
 		_nav[p.id] = b
 
-	var fill := Control.new()
-	fill.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vb.add_child(fill)
-	vb.add_child(DownloadsPanel.new())
-	vb.add_child(HubUI.vspace(6))
-	vb.add_child(HubUI.label("Godot Hub v" + Hub.HUB_VERSION, "DimLabel"))
+	# 오른쪽: 설정
+	var right := HBoxContainer.new()
+	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right.size_flags_stretch_ratio = 1.0
+	right.alignment = BoxContainer.ALIGNMENT_END
+	hb.add_child(right)
+	var gear := Button.new()
+	gear.text = "설정"
+	gear.icon = HubIcons.icon("gear")
+	gear.theme_type_variation = "FlatButton"
+	gear.focus_mode = Control.FOCUS_NONE
+	gear.pressed.connect(_open_settings)
+	right.add_child(gear)
 	return panel
 
 

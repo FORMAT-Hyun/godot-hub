@@ -1,6 +1,6 @@
 class_name ProjectsPage
 extends MarginContainer
-## 프로젝트 페이지 (유니티 허브 배치 + 오른쪽에 고도 프로젝트 매니저와 같은 메뉴)
+## 프로젝트 페이지 (고도 프로젝트 매니저와 같은 배치: 도구 줄 · 목록 · 오른쪽 메뉴)
 
 signal go_to_installs
 
@@ -14,7 +14,6 @@ var _sort: OptionButton
 var _empty: CenterContainer
 var _empty_title: Label
 var _empty_desc: Label
-var _column_header: Control
 var _dir_dialog: FileDialog
 var _new_dialog: NewProjectDialog
 var _refresh_queued := false
@@ -32,54 +31,39 @@ var _btn_remove_missing: Button
 
 
 func _ready() -> void:
-	add_theme_constant_override("margin_left", 28)
-	add_theme_constant_override("margin_right", 20)
-	add_theme_constant_override("margin_top", 22)
-	add_theme_constant_override("margin_bottom", 16)
+	add_theme_constant_override("margin_left", 8)
+	add_theme_constant_override("margin_right", 8)
+	add_theme_constant_override("margin_top", 8)
+	add_theme_constant_override("margin_bottom", 8)
 	var root := VBoxContainer.new()
-	root.add_theme_constant_override("separation", 14)
+	root.add_theme_constant_override("separation", 8)
 	add_child(root)
 
-	# ── 헤더: 제목 + [가져오기 ▾] [새 프로젝트] ──
-	var header := HBoxContainer.new()
-	header.add_theme_constant_override("separation", 8)
-	root.add_child(header)
-	header.add_child(HubUI.label("프로젝트", "HeaderLabel"))
-	header.add_child(HubUI.spacer())
-	var import_btn := MenuButton.new()
-	import_btn.text = "가져오기  ▾"
-	import_btn.icon = HubIcons.icon("load")
-	import_btn.flat = false
-	import_btn.focus_mode = Control.FOCUS_NONE
-	var pm := import_btn.get_popup()
-	pm.add_icon_item(HubIcons.icon("load"), "프로젝트 폴더 추가...", 0)
-	pm.add_icon_item(HubIcons.icon("search"), "폴더 안의 프로젝트 모두 찾기...", 1)
-	pm.id_pressed.connect(func(_id: int) -> void: _dir_dialog.popup_centered())
-	header.add_child(import_btn)
-	var new_btn := Button.new()
-	new_btn.text = "새 프로젝트"
-	new_btn.icon = HubIcons.icon("plus")
-	new_btn.theme_type_variation = "PrimaryButton"
-	new_btn.focus_mode = Control.FOCUS_NONE
-	new_btn.pressed.connect(open_new_project)
-	header.add_child(new_btn)
-
-	# ── 검색 / 정렬 ──
+	# ── 도구 줄 (고도 프로젝트 매니저 배치): [만들기] [가져오기] [스캔] [필터........] 정렬: [ ] ──
 	var toolbar := HBoxContainer.new()
-	toolbar.add_theme_constant_override("separation", 8)
+	toolbar.add_theme_constant_override("separation", 4)
 	root.add_child(toolbar)
+	toolbar.add_child(_tool_button("만들기", "plus", "새 프로젝트 만들기", open_new_project))
+	toolbar.add_child(_tool_button("가져오기", "load", "기존 프로젝트 폴더 가져오기", func() -> void:
+		_dir_dialog.title = "가져올 고도 프로젝트 폴더 선택"
+		_dir_dialog.popup_centered()))
+	toolbar.add_child(_tool_button("스캔", "search", "폴더 안의 프로젝트를 모두 찾아 추가", func() -> void:
+		_dir_dialog.title = "프로젝트를 찾을 폴더 선택"
+		_dir_dialog.popup_centered()))
 	_search = LineEdit.new()
-	_search.placeholder_text = "프로젝트 검색 (태그는 tag:이름)"
+	_search.placeholder_text = "프로젝트 필터 (태그는 tag:이름)"
 	_search.right_icon = HubIcons.icon("search", 16, false)
 	_search.clear_button_enabled = true
-	_search.custom_minimum_size.x = 300
+	_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_search.text_changed.connect(func(_t: String) -> void: _queue_refresh())
 	toolbar.add_child(_search)
-	toolbar.add_child(HubUI.spacer())
-	toolbar.add_child(HubUI.label("정렬", "DimLabel"))
+	var sort_lbl := HubUI.label("  정렬:")
+	sort_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	toolbar.add_child(sort_lbl)
 	_sort = OptionButton.new()
 	for n in SORT_NAMES:
 		_sort.add_item(n)
+	_sort.custom_minimum_size.x = 170
 	_sort.select(clampi(int(Hub.settings.get("sort", 0)), 0, SORT_NAMES.size() - 1))
 	_sort.focus_mode = Control.FOCUS_NONE
 	_sort.item_selected.connect(func(i: int) -> void:
@@ -88,46 +72,28 @@ func _ready() -> void:
 		_queue_refresh())
 	toolbar.add_child(_sort)
 
-	# ── 본문: 왼쪽 목록 + 오른쪽 메뉴 ──
+	# ── 본문: 왼쪽 목록 칸 + 오른쪽 메뉴 ──
 	var main := HBoxContainer.new()
 	main.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	main.add_theme_constant_override("separation", 14)
+	main.add_theme_constant_override("separation", 6)
 	root.add_child(main)
-	var left := VBoxContainer.new()
-	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	left.add_theme_constant_override("separation", 8)
-	main.add_child(left)
+	var list_panel := PanelContainer.new()
+	list_panel.theme_type_variation = "ListPanel"
+	list_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	main.add_child(list_panel)
 	main.add_child(_build_side_menu())
-
-	# 열 제목
-	var cols := MarginContainer.new()
-	cols.add_theme_constant_override("margin_left", 10)
-	cols.add_theme_constant_override("margin_right", 10)
-	var ch := HBoxContainer.new()
-	ch.add_theme_constant_override("separation", 12)
-	cols.add_child(ch)
-	ch.add_child(_fixed(28))
-	ch.add_child(_fixed(40))
-	var name_col := HubUI.label("이름", "ColumnLabel")
-	name_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	ch.add_child(name_col)
-	ch.add_child(HubUI.label("수정일", "ColumnLabel", ProjectRow.MODIFIED_WIDTH))
-	ch.add_child(HubUI.label("에디터 버전", "ColumnLabel", ProjectRow.EDITOR_WIDTH))
-	ch.add_child(_fixed(32))
-	left.add_child(cols)
-	_column_header = cols
 
 	# 목록
 	var body := Control.new()
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	left.add_child(body)
+	list_panel.add_child(body)
 	_scroll = ScrollContainer.new()
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	body.add_child(_scroll)
 	_list = VBoxContainer.new()
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_list.add_theme_constant_override("separation", 6)
+	_list.add_theme_constant_override("separation", 2)
 	_scroll.add_child(_list)
 
 	_empty = CenterContainer.new()
@@ -198,6 +164,16 @@ func _build_side_menu() -> Control:
 	donate.tooltip_text = "Godot 엔진 개발 후원 (fund.godotengine.org)"
 	side.add_child(donate)
 	return side
+
+
+func _tool_button(text: String, icon_name: String, tip: String, on_pressed: Callable) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.icon = HubIcons.icon(icon_name)
+	b.tooltip_text = tip
+	b.focus_mode = Control.FOCUS_NONE
+	b.pressed.connect(on_pressed)
+	return b
 
 
 func _side_button(text: String, icon_name: String, on_pressed: Callable) -> Button:
@@ -396,10 +372,9 @@ func _refresh() -> void:
 		_list.add_child(row)
 		row.set_selected(Hub.same_path(row.path, _selected))
 	_empty.visible = items.is_empty()
-	_column_header.visible = not items.is_empty()
 	if Hub.projects.is_empty():
 		_empty_title.text = "아직 등록된 프로젝트가 없어요"
-		_empty_desc.text = "'가져오기'로 기존 프로젝트를 추가하거나 '새 프로젝트'를 만드세요.\n프로젝트 폴더를 이 창에 끌어다 놓아도 돼요."
+		_empty_desc.text = "'가져오기'·'스캔'으로 기존 프로젝트를 추가하거나 '만들기'로 새로 만드세요.\n프로젝트 폴더를 이 창에 끌어다 놓아도 돼요."
 	else:
 		_empty_title.text = "검색 결과가 없어요"
 		_empty_desc.text = "다른 이름이나 경로로 검색해 보세요."

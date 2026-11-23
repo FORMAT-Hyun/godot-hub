@@ -1,6 +1,6 @@
 class_name InstallsPage
 extends MarginContainer
-## 설치 페이지 (유니티 허브의 Installs 화면 배치)
+## 설치 페이지 (고도 프로젝트 매니저의 "에셋 스토어" 탭 자리)
 
 const FILTERS := [["all", "전체"], ["stable", "Stable"], ["pre", "프리릴리스"], ["mono", ".NET"]]
 
@@ -14,37 +14,33 @@ var _refresh_queued := false
 
 
 func _ready() -> void:
-	add_theme_constant_override("margin_left", 28)
-	add_theme_constant_override("margin_right", 28)
-	add_theme_constant_override("margin_top", 22)
-	add_theme_constant_override("margin_bottom", 16)
+	add_theme_constant_override("margin_left", 8)
+	add_theme_constant_override("margin_right", 8)
+	add_theme_constant_override("margin_top", 8)
+	add_theme_constant_override("margin_bottom", 8)
 	var root := VBoxContainer.new()
-	root.add_theme_constant_override("separation", 14)
+	root.add_theme_constant_override("separation", 8)
 	add_child(root)
 
-	var header := HBoxContainer.new()
-	header.add_theme_constant_override("separation", 8)
-	root.add_child(header)
-	header.add_child(HubUI.label("설치", "HeaderLabel"))
-	header.add_child(HubUI.spacer())
-	var locate := Button.new()
-	locate.text = "위치 지정"
-	locate.icon = HubIcons.icon("load")
-	locate.tooltip_text = "이미 PC에 있는 고도 실행 파일(.exe)을 등록해요"
-	locate.focus_mode = Control.FOCUS_NONE
-	locate.pressed.connect(func() -> void: _file_dialog.popup_centered())
-	header.add_child(locate)
+	# ── 도구 줄 (프로젝트 페이지와 같은 배치): [에디터 설치] [위치 지정]  ...  전체 · Stable · 프리릴리스 · .NET ──
+	var toolbar := HBoxContainer.new()
+	toolbar.add_theme_constant_override("separation", 4)
+	root.add_child(toolbar)
 	var install := Button.new()
 	install.text = "에디터 설치"
 	install.icon = HubIcons.icon("download")
 	install.theme_type_variation = "PrimaryButton"
 	install.focus_mode = Control.FOCUS_NONE
 	install.pressed.connect(open_install_dialog)
-	header.add_child(install)
-
-	var chips := HBoxContainer.new()
-	chips.add_theme_constant_override("separation", 6)
-	root.add_child(chips)
+	toolbar.add_child(install)
+	var locate := Button.new()
+	locate.text = "위치 지정"
+	locate.icon = HubIcons.icon("load")
+	locate.tooltip_text = "이미 PC에 있는 고도 실행 파일(.exe)을 등록해요"
+	locate.focus_mode = Control.FOCUS_NONE
+	locate.pressed.connect(func() -> void: _file_dialog.popup_centered())
+	toolbar.add_child(locate)
+	toolbar.add_child(HubUI.spacer())
 	var group := ButtonGroup.new()
 	for f in FILTERS:
 		var b := Button.new()
@@ -53,15 +49,20 @@ func _ready() -> void:
 		b.button_group = group
 		b.theme_type_variation = "ChipButton"
 		b.focus_mode = Control.FOCUS_NONE
+		b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		b.button_pressed = f[0] == _filter
 		b.pressed.connect(func() -> void:
 			_filter = f[0]
 			_refresh())
-		chips.add_child(b)
+		toolbar.add_child(b)
 
+	var list_panel := PanelContainer.new()
+	list_panel.theme_type_variation = "ListPanel"
+	list_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	root.add_child(list_panel)
 	var body := Control.new()
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	root.add_child(body)
+	list_panel.add_child(body)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -192,15 +193,11 @@ func _build_row(inst: Dictionary) -> Control:
 		title_row.add_child(HubUI.tag("기본", HubTheme.ACCENT))
 	if not exists:
 		title_row.add_child(HubUI.tag("파일 없음", HubTheme.ERROR))
-	# 화면에는 짧게 한 줄만, 자세한 내용(경로 · 종류 · 독립 모드)은 마우스를 올리면 보여 준다
-	var used := Hub.projects_using(inst.id)
-	vb.add_child(HubUI.label("프로젝트 %d개" % used if used > 0 else "사용하는 프로젝트 없음", "DimLabel"))
-	var details: Array = [".NET" if mono else "표준"]
-	if Hub.is_self_contained(inst):
-		details.append("독립 모드")
-	if not inst.get("managed", false):
-		details.append("직접 등록")
-	row.tooltip_text = "%s\n%s" % [str(inst.get("exe", "")).replace("/", "\\"), "  ·  ".join(details)]
+	# 받은 날짜 · 개발자 (경로 같은 긴 정보는 보여 주지 않는다. 폴더는 ⚙ > 설치 폴더 열기)
+	var added := Hub.install_added(inst)
+	var bias := int(Time.get_time_zone_from_system().get("bias", 0))
+	var date := Time.get_date_string_from_unix_time(added + bias * 60) if added > 0 else "날짜 모름"
+	vb.add_child(HubUI.label("%s  ·  Godot Engine" % date, "DimLabel"))
 	row.custom_minimum_size.y = 72  # 글자를 줄여도 줄 높이는 그대로
 	vb.alignment = BoxContainer.ALIGNMENT_CENTER
 	vb.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -222,6 +219,7 @@ func _build_row(inst: Dictionary) -> Control:
 	pm.set_item_checked(pm.get_item_index(2), Hub.is_self_contained(inst))
 	pm.add_separator()
 	pm.add_icon_item(HubIcons.icon("folder"), "설치 폴더 열기", 4)
+	pm.add_icon_item(HubIcons.icon("more"), "속성", 6)
 	pm.add_separator()
 	pm.add_icon_item(HubIcons.icon("trash"), "제거" if inst.get("managed", false) else "목록에서 제거", 5)
 	pm.id_pressed.connect(_on_menu.bind(inst))
@@ -241,6 +239,74 @@ func _on_menu(id: int, inst: Dictionary) -> void:
 			OS.shell_show_in_file_manager(ProjectSettings.globalize_path(str(inst.get("exe", ""))))
 		5:
 			_confirm_remove(inst)
+		6:
+			_show_properties(inst)
+
+
+## 에디터 속성 창: 버전 · 종류 · 받은 날짜 · 경로 · 크기 · 쓰는 프로젝트
+func _show_properties(inst: Dictionary) -> void:
+	var d := AcceptDialog.new()
+	d.title = "속성 — Godot " + Hub.install_label(inst)
+	d.ok_button_text = "닫기"
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 16)
+	grid.add_theme_constant_override("v_separation", 8)
+	d.add_child(grid)
+	var exe := str(inst.get("exe", ""))
+	var added := Hub.install_added(inst)
+	var bias := int(Time.get_time_zone_from_system().get("bias", 0))
+	var names: Array = []
+	for rec in Hub.projects:
+		if rec.get("editor", "") == inst.id:
+			names.append(str(Hub.project_info(rec.path).name))
+	var rows := [
+		["버전", "Godot " + str(inst.get("version", "?"))],
+		["종류", ".NET (C#)" if inst.get("mono", false) else "표준"],
+		["개발자", "Godot Engine"],
+		["받은 날짜", Time.get_datetime_string_from_unix_time(added + bias * 60, true) if added > 0 else "모름"],
+		["설치 방식", "허브에서 설치" if inst.get("managed", false) else "직접 등록"],
+		["기본 버전", "예" if Hub.settings.get("default_editor", "") == inst.id else "아니요"],
+		["독립 모드", "켜짐 (설정을 이 폴더에 따로 저장)" if Hub.is_self_contained(inst) else "꺼짐"],
+		["폴더 크기", HubUI.human_size(_dir_size(exe.get_base_dir())) if FileAccess.file_exists(exe) else "파일 없음"],
+		["쓰는 프로젝트", ("%d개: %s" % [names.size(), ", ".join(names)]) if not names.is_empty() else "없음"],
+	]
+	for r in rows:
+		var k := HubUI.label(r[0], "DimLabel")
+		k.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		grid.add_child(k)
+		var v := HubUI.label(r[1], "", 380)
+		v.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		grid.add_child(v)
+	grid.add_child(HubUI.label("실행 파일", "DimLabel"))
+	var path_row := HBoxContainer.new()
+	var path_edit := LineEdit.new()
+	path_edit.text = exe.replace("/", "\\")
+	path_edit.editable = false
+	path_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	path_row.add_child(path_edit)
+	var copy := HubUI.flat_icon_button("copy", "경로 복사")
+	copy.pressed.connect(func() -> void:
+		DisplayServer.clipboard_set(path_edit.text)
+		Hub.toast.emit("경로를 복사했어요"))
+	path_row.add_child(copy)
+	grid.add_child(path_row)
+	d.visibility_changed.connect(func() -> void:
+		if not d.visible:
+			d.queue_free())
+	add_child(d)
+	d.popup_centered(Vector2i(560, 0))
+
+
+static func _dir_size(dir: String) -> int:
+	var total := 0
+	for f in DirAccess.get_files_at(dir):
+		var fa := FileAccess.open(dir.path_join(f), FileAccess.READ)
+		if fa:
+			total += fa.get_length()
+	for sub in DirAccess.get_directories_at(dir):
+		total += _dir_size(dir.path_join(sub))
+	return total
 
 
 func _confirm_remove(inst: Dictionary) -> void:

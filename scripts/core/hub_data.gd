@@ -7,7 +7,7 @@ signal settings_changed
 signal running_changed
 signal toast(message: String)
 
-const HUB_VERSION := "0.1.1"
+const HUB_VERSION := "0.1.2"
 const SCAN_MAX_DEPTH := 5
 const SCAN_SKIP := ["node_modules", "$RECYCLE.BIN", "System Volume Information", "Windows",
 	"Program Files", "Program Files (x86)", "AppData", "Library", "build", "addons"]
@@ -146,6 +146,8 @@ func add_install(rec: Dictionary) -> Dictionary:
 		id = "%s-%d" % [base_id, n]
 		n += 1
 	rec["id"] = id
+	if not rec.has("added"):
+		rec["added"] = int(Time.get_unix_time_from_system())
 	installs.append(rec)
 	# 에디터가 지정되지 않은 프로젝트에 새 에디터를 자동으로 연결
 	for proj in projects:
@@ -186,6 +188,14 @@ func set_default_install(id: String) -> void:
 	settings.default_editor = id
 	save_settings()
 	installs_changed.emit()
+
+
+## 받은(등록한) 시각. 예전 기록에는 없으므로 실행 파일의 수정 시각으로 대신한다
+func install_added(inst: Dictionary) -> int:
+	var t := int(inst.get("added", 0))
+	if t <= 0 and FileAccess.file_exists(str(inst.get("exe", ""))):
+		t = int(FileAccess.get_modified_time(str(inst.get("exe", ""))))
+	return t
 
 
 func is_self_contained(inst: Dictionary) -> bool:
