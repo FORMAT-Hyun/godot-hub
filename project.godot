@@ -1,0 +1,37 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Godot Hub"
+config/description="고도 엔진 프로젝트와 에디터 버전을 한 곳에서 관리하는 런처"
+config/version="0.1.0"
+run/main_scene="res://scenes/main.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="GodotHub"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+run/low_processor_mode=true
+config/icon="res://icon.svg"
+
+[autoload]
+
+Hub="*res://scripts/core/hub_data.gd"
+Releases="*res://scripts/core/release_api.gd"
+Downloads="*res://scripts/core/download_manager.gd"
+
+[display]
+
+window/size/viewport_width=1180
+window/size/viewport_height=720
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
