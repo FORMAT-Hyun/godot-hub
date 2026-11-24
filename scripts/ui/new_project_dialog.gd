@@ -6,11 +6,11 @@ signal project_created(path: String, install_id: String)
 
 var templates := [
 	{"id": "forward", "title": "3D", "renderer": "Forward+", "feature": "Forward Plus", "cat": "3d", "badge": "3D",
-		"color": Color("#478cbf"), "desc": "데스크톱·콘솔용 고품질 3D예요.\n최신 그래픽 기능을 모두 쓸 수 있어요. (Vulkan / Direct3D 12)"},
-	{"id": "mobile", "title": "3D 모바일", "renderer": "Mobile", "feature": "Mobile", "cat": "3d", "badge": "M",
-		"color": Color("#4fa38f"), "desc": "모바일·저사양 기기용 3D예요.\nForward+보다 가볍고 대부분의 기능을 지원해요."},
-	{"id": "compat", "title": "2D / 웹", "renderer": "Compatibility", "feature": "GL Compatibility", "cat": "2d", "badge": "2D",
-		"color": Color("#d08a3e"), "desc": "2D 게임과 웹 내보내기에 가장 잘 맞아요.\n오래된 기기까지 가장 넓게 지원해요. (OpenGL)"},
+		"color": Color("#478cbf"), "desc": L.t("데스크톱·콘솔용 고품질 3D예요.\n최신 그래픽 기능을 모두 쓸 수 있어요. (Vulkan / Direct3D 12)")},
+	{"id": "mobile", "title": L.t("3D 모바일"), "renderer": "Mobile", "feature": "Mobile", "cat": "3d", "badge": "M",
+		"color": Color("#4fa38f"), "desc": L.t("모바일·저사양 기기용 3D예요.\nForward+보다 가볍고 대부분의 기능을 지원해요.")},
+	{"id": "compat", "title": L.t("2D / 웹"), "renderer": "Compatibility", "feature": "GL Compatibility", "cat": "2d", "badge": "2D",
+		"color": Color("#d08a3e"), "desc": L.t("2D 게임과 웹 내보내기에 가장 잘 맞아요.\n오래된 기기까지 가장 넓게 지원해요. (OpenGL)")},
 ]
 
 var _selected := "forward"
@@ -28,9 +28,9 @@ var _dir_dialog: FileDialog
 
 
 func _init() -> void:
-	title = "새 프로젝트"
-	ok_button_text = "프로젝트 생성"
-	cancel_button_text = "취소"
+	title = L.t("새 프로젝트")
+	ok_button_text = L.t("프로젝트 생성")
+	cancel_button_text = L.t("취소")
 	dialog_hide_on_ok = false
 	min_size = Vector2i(920, 560)
 
@@ -45,10 +45,10 @@ func _ready() -> void:
 	cats.custom_minimum_size.x = 140
 	cats.add_theme_constant_override("separation", 2)
 	root.add_child(cats)
-	cats.add_child(HubUI.label("템플릿", "SectionLabel"))
+	cats.add_child(HubUI.label(L.t("템플릿"), "SectionLabel"))
 	cats.add_child(HubUI.vspace(4))
 	var group := ButtonGroup.new()
-	for c in [["all", "전체"], ["3d", "3D"], ["2d", "2D"]]:
+	for c in [["all", L.t("전체")], ["3d", "3D"], ["2d", "2D"]]:
 		var b := Button.new()
 		b.text = c[1]
 		b.toggle_mode = true
@@ -94,18 +94,18 @@ func _ready() -> void:
 	form.add_child(HubUI.vspace(4))
 	form.add_child(HSeparator.new())
 
-	form.add_child(HubUI.label("에디터 버전", "SectionLabel"))
+	form.add_child(HubUI.label(L.t("에디터 버전"), "SectionLabel"))
 	_editor_opt = OptionButton.new()
 	_editor_opt.fit_to_longest_item = false
 	_editor_opt.item_selected.connect(func(_i: int) -> void: _validate())
 	form.add_child(_editor_opt)
 
-	form.add_child(HubUI.label("프로젝트 이름", "SectionLabel"))
+	form.add_child(HubUI.label(L.t("프로젝트 이름"), "SectionLabel"))
 	_name_edit = LineEdit.new()
 	_name_edit.text_changed.connect(func(_t: String) -> void: _validate())
 	form.add_child(_name_edit)
 
-	form.add_child(HubUI.label("위치", "SectionLabel"))
+	form.add_child(HubUI.label(L.t("위치"), "SectionLabel"))
 	var loc := HBoxContainer.new()
 	form.add_child(loc)
 	_location_edit = LineEdit.new()
@@ -114,17 +114,17 @@ func _ready() -> void:
 	loc.add_child(_location_edit)
 	var browse := Button.new()
 	browse.icon = HubIcons.icon("load")
-	browse.tooltip_text = "폴더 선택"
+	browse.tooltip_text = L.t("폴더 선택")
 	browse.pressed.connect(func() -> void: _dir_dialog.popup_centered())
 	loc.add_child(browse)
 	_preview = HubUI.label("", "DimLabel", 270)
 	_preview.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	form.add_child(_preview)
 
-	form.add_child(HubUI.label("버전 관리", "SectionLabel"))
+	form.add_child(HubUI.label(L.t("버전 관리"), "SectionLabel"))
 	_vcs_opt = OptionButton.new()
-	_vcs_opt.add_item("없음")
-	_vcs_opt.add_item("Git (.gitignore 포함)")
+	_vcs_opt.add_item(L.t("없음"))
+	_vcs_opt.add_item(L.t("Git (.gitignore 포함)"))
 	form.add_child(_vcs_opt)
 
 	_error = HubUI.label("", "", 270)
@@ -132,7 +132,7 @@ func _ready() -> void:
 	_error.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	form.add_child(_error)
 
-	_dir_dialog = HubUI.dir_dialog(self, "프로젝트를 만들 위치", func(dir: String) -> void:
+	_dir_dialog = HubUI.dir_dialog(self, L.t("프로젝트를 만들 위치"), func(dir: String) -> void:
 		_location_edit.text = Hub.normalize_path(dir).replace("/", "\\")
 		_validate())
 
@@ -164,7 +164,7 @@ func _build_card(t: Dictionary) -> PanelContainer:
 	badge.add_child(bl)
 	vb.add_child(badge)
 	vb.add_child(HubUI.label(t.title, "TitleLabel"))
-	vb.add_child(HubUI.label("렌더러: " + str(t.renderer), "DimLabel"))
+	vb.add_child(HubUI.label(L.t("렌더러: ") + str(t.renderer), "DimLabel"))
 	card.gui_input.connect(func(e: InputEvent) -> void:
 		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 			_select(t.id))
@@ -216,15 +216,15 @@ func _validate() -> String:
 	var name := _name_edit.text.strip_edges()
 	var target := _target_dir()
 	if _editor_opt.item_count == 0:
-		err = "설치된 에디터가 없어요. 먼저 설치 페이지에서 에디터를 추가해 주세요."
+		err = L.t("설치된 에디터가 없어요. 먼저 설치 페이지에서 에디터를 추가해 주세요.")
 	elif name == "":
-		err = "프로젝트 이름을 입력해 주세요."
+		err = L.t("프로젝트 이름을 입력해 주세요.")
 	elif _location_edit.text.strip_edges() == "":
-		err = "위치를 골라 주세요."
+		err = L.t("위치를 골라 주세요.")
 	elif DirAccess.dir_exists_absolute(target) and \
 			(DirAccess.get_files_at(target).size() + DirAccess.get_directories_at(target).size()) > 0:
-		err = "같은 이름의 폴더가 이미 있고 비어 있지 않아요."
-	_preview.text = "만들어질 폴더: " + target.replace("/", "\\")
+		err = L.t("같은 이름의 폴더가 이미 있고 비어 있지 않아요.")
+	_preview.text = L.t("만들어질 폴더: ") + target.replace("/", "\\")
 	_error.text = err
 	get_ok_button().disabled = err != ""
 	return err

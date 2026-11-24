@@ -6,7 +6,7 @@ signal job_updated(job: Dictionary)
 
 const ACTIVE_STATES := ["queued", "downloading", "extracting"]
 
-## {id, kind("editor"), tag, mono, url, size, file, title, state, progress, downloaded, message, tmp}
+## {id, kind("editor" | "templates"), tag, mono, url, size, file, title, state, progress, downloaded, message, tmp}
 var jobs: Array = []
 
 var _current: Dictionary = {}
@@ -41,16 +41,29 @@ func is_busy_with(tag: String, mono: bool, kind: String) -> bool:
 	return false
 
 
-## 내보내기 템플릿은 고도 에디터 안(편집기 > 내보내기 템플릿 관리)에서 설치하므로 허브는 에디터만 받는다.
+## 설치된 에디터의 내보내기 템플릿(.tpz)을 받아 그 에디터가 찾는 폴더에 풀어 준다
+func install_templates(inst: Dictionary) -> void:
+	var tag := str(inst.get("version", ""))
+	var mono := bool(inst.get("mono", false))
+	if tag == "" or not GodotVersion.parse(tag).valid:
+		Hub.toast.emit(L.t("버전을 알 수 없는 에디터라 템플릿을 받을 수 없어요"))
+		return
+	if is_busy_with(tag, mono, "templates"):
+		return
+	var url := Hub.templates_url(inst)
+	_enqueue("templates", tag, mono, {"url": url, "name": url.get_file(), "size": 0})
+	jobs[-1]["dest"] = Hub.templates_dir(inst)
+
+
 func install_editor(release: Dictionary, mono: bool) -> void:
 	var tag: String = release.get("tag", "")
 	var assets: Dictionary = release.get("assets", {})
 	var asset: Dictionary = assets.get("mono" if mono else "std", {})
 	if asset.is_empty():
-		Hub.toast.emit("이 버전에는 Windows용 %s 빌드가 없어요" % (".NET" if mono else "표준"))
+		Hub.toast.emit(L.t("이 버전에는 Windows용 %s 빌드가 없어요") % (".NET" if mono else L.t("표준")))
 		return
 	if not Hub.find_install_by_version(tag, mono).is_empty():
-		Hub.toast.emit("이미 설치된 버전이에요")
+		Hub.toast.emit(L.t("이미 설치된 버전이에요"))
 	elif not is_busy_with(tag, mono, "editor"):
 		_enqueue("editor", tag, mono, asset)
 
@@ -90,7 +103,7 @@ func _enqueue(kind: String, tag: String, mono: bool, asset: Dictionary) -> void:
 		"url": asset.get("url", ""), "size": int(asset.get("size", 0)), "file": asset.get("name", ""),
 		"state": "queued", "progress": 0.0, "downloaded": 0, "message": "",
 	}
-	job["title"] = "Godot %s%s" % [tag, " .NET" if mono else ""]
+	job["title"] = "Godot %s%s%s" % [tag, " .NET" if mono else "", L.t(" 템플릿") if kind == "templates" else ""]
 	_next_id += 1
 	jobs.append(job)
 	jobs_changed.emit()
@@ -117,7 +130,7 @@ func _start_next() -> void:
 	add_child(_http)
 	var err := _http.request(_current.url, PackedStringArray(["User-Agent: GodotHub-Launcher"]))
 	if err != OK:
-		_fail(_current, "다운로드를 시작하지 못했어요 (%s)" % error_string(err))
+		_fail(_current, L.t("다운로드를 시작하지 못했어요 (%s)") % error_string(err))
 		return
 	_current.state = "downloading"
 	_tick = 1.0
@@ -151,14 +164,19 @@ func _on_downloaded(result: int, code: int, _headers: PackedStringArray, _body: 
 	if job.is_empty() or job.state != "downloading":
 		return
 	if result != HTTPRequest.RESULT_SUCCESS or code != 200:
-		var why := ("HTTP %d" % code) if code > 0 else ("네트워크 오류 %d" % result)
+		var why := ("HTTP %d" % code) if code > 0 else (L.t("네트워크 오류 %d") % result)
+		if code == 404 and job.kind == "templates":
+			why = L.t("이 버전은 공식 템플릿 파일이 없어요")
 		DirAccess.remove_absolute(job.tmp)
-		_fail(job, "다운로드 실패 (%s)" % why)
+		_fail(job, L.t("다운로드 실패 (%s)") % why)
 		return
 	job.state = "extracting"
 	job.progress = 0.0
 	jobs_changed.emit()
 	_thread = Thread.new()
+	if job.kind == "templates":
+		_thread.start(_extract_templates.bind(job.tmp, job.dest))
+		return
 	job["dest"] = Hub.editor_install_dir(job.tag, job.mono)
 	_thread.start(_extract_editor.bind(job.tmp, job.dest))
 
@@ -168,7 +186,7 @@ func _on_downloaded(result: int, code: int, _headers: PackedStringArray, _body: 
 func _extract_editor(zip_path: String, dest: String) -> Dictionary:
 	var zr := ZIPReader.new()
 	if zr.open(zip_path) != OK:
-		return _done({"ok": false, "msg": "압축 파일이 손상됐어요. 다시 받아 주세요."})
+		return _done({"ok": false, "msg": L.t("압축 파일이 손상됐어요. 다시 받아 주세요.")})
 	DirAccess.make_dir_recursive_absolute(dest)
 	var files := zr.get_files()
 	for i in files.size():
@@ -183,12 +201,40 @@ func _extract_editor(zip_path: String, dest: String) -> Dictionary:
 		var f := FileAccess.open(out, FileAccess.WRITE)
 		if f == null:
 			zr.close()
-			return _done({"ok": false, "msg": "파일을 쓸 수 없어요:\n" + out})
+			return _done({"ok": false, "msg": L.t("파일을 쓸 수 없어요:\n") + out})
 		f.store_buffer(zr.read_file(name))
 		f.close()
 		if i % 10 == 0:
 			call_deferred("_on_extract_progress", float(i) / files.size())
 	zr.close()
+	return _done({"ok": true})
+
+
+## .tpz 안의 templates/ 폴더 내용을 dest에 바로 푼다
+func _extract_templates(tpz_path: String, dest: String) -> Dictionary:
+	var zr := ZIPReader.new()
+	if zr.open(tpz_path) != OK:
+		return _done({"ok": false, "msg": L.t("템플릿 파일이 손상됐어요. 다시 받아 주세요.")})
+	var files := zr.get_files()
+	DirAccess.make_dir_recursive_absolute(dest)
+	for i in files.size():
+		var name := files[i]
+		if name.split("/").has("..") or name.ends_with("/"):
+			continue
+		var rel := name.trim_prefix("templates/")
+		var out := dest.path_join(rel)
+		DirAccess.make_dir_recursive_absolute(out.get_base_dir())
+		var f := FileAccess.open(out, FileAccess.WRITE)
+		if f == null:
+			zr.close()
+			return _done({"ok": false, "msg": "파일을 쓸 수 없어요:
+" + out})
+		f.store_buffer(zr.read_file(name))
+		f.close()
+		call_deferred("_on_extract_progress", float(i + 1) / files.size())
+	zr.close()
+	if not FileAccess.file_exists(dest.path_join("version.txt")):
+		return _done({"ok": false, "msg": L.t("템플릿 파일 안에 version.txt가 없어요")})
 	return _done({"ok": true})
 
 
@@ -214,11 +260,19 @@ func _on_extract_done(res: Dictionary) -> void:
 		return
 	DirAccess.remove_absolute(job.tmp)
 	if not res.get("ok", false):
-		_fail(job, str(res.get("msg", "설치 실패")))
+		_fail(job, str(res.get("msg", L.t("설치 실패"))))
+		return
+	if job.kind == "templates":
+		job.state = "done"
+		job.progress = 1.0
+		Hub.toast.emit(L.t("%s 설치 완료") % job.title)
+		Hub.installs_changed.emit()
+		_finish_current()
+		get_tree().create_timer(8.0).timeout.connect(dismiss.bind(int(job.id)))
 		return
 	var exe := Hub.find_editor_exe(job.dest)
 	if exe == "":
-		_fail(job, "압축을 풀었지만 실행 파일을 찾지 못했어요")
+		_fail(job, L.t("압축을 풀었지만 실행 파일을 찾지 못했어요"))
 		return
 	if Hub.settings.get("self_contained", true):
 		var f := FileAccess.open(exe.get_base_dir().path_join("._sc_"), FileAccess.WRITE)
@@ -227,7 +281,7 @@ func _on_extract_done(res: Dictionary) -> void:
 	Hub.add_install({"version": job.tag, "mono": job.mono, "path": job.dest, "exe": exe, "managed": true})
 	job.state = "done"
 	job.progress = 1.0
-	Hub.toast.emit("%s 설치 완료" % job.title)
+	Hub.toast.emit(L.t("%s 설치 완료") % job.title)
 	_finish_current()
 	var id: int = job.id
 	get_tree().create_timer(8.0).timeout.connect(dismiss.bind(id))

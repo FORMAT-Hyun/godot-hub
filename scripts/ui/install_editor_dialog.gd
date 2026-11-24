@@ -15,8 +15,8 @@ var _queued := false
 
 
 func _init() -> void:
-	title = "에디터 설치"
-	ok_button_text = "닫기"
+	title = L.t("에디터 설치")
+	ok_button_text = L.t("닫기")
 	min_size = Vector2i(780, 560)
 
 
@@ -44,7 +44,7 @@ func _ready() -> void:
 	top.add_child(HubUI.spacer())
 	_status = HubUI.label("", "DimLabel")
 	top.add_child(_status)
-	_refresh_btn = HubUI.flat_icon_button("refresh", "목록 새로고침")
+	_refresh_btn = HubUI.flat_icon_button("refresh", L.t("목록 새로고침"))
 	_refresh_btn.pressed.connect(func() -> void:
 		Releases.refresh(true)
 		_rebuild())
@@ -54,18 +54,18 @@ func _ready() -> void:
 	var loc := HBoxContainer.new()
 	loc.add_theme_constant_override("separation", 8)
 	root.add_child(loc)
-	loc.add_child(HubUI.label("설치 위치", "SectionLabel"))
+	loc.add_child(HubUI.label(L.t("설치 위치"), "SectionLabel"))
 	_path_edit = LineEdit.new()
 	_path_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_path_edit.editable = false
 	loc.add_child(_path_edit)
 	var browse := Button.new()
-	browse.text = "경로 지정"
+	browse.text = L.t("경로 지정")
 	browse.icon = HubIcons.icon("load")
 	browse.focus_mode = Control.FOCUS_NONE
 	browse.pressed.connect(func() -> void: _dir_dialog.popup_centered())
 	loc.add_child(browse)
-	_dir_dialog = HubUI.dir_dialog(self, "에디터를 설치할 폴더", func(dir: String) -> void:
+	_dir_dialog = HubUI.dir_dialog(self, L.t("에디터를 설치할 폴더"), func(dir: String) -> void:
 		Hub.settings.install_dir = Hub.normalize_path(dir)
 		Hub.save_settings()
 		_update_path())
@@ -92,7 +92,7 @@ func _ready() -> void:
 
 func _update_path() -> void:
 	_path_edit.text = str(Hub.settings.install_dir).replace("/", "\\")
-	_path_edit.tooltip_text = "새로 받는 에디터는 이 폴더 안에 버전별로 설치돼요.\n이미 설치된 에디터는 옮겨지지 않아요."
+	_path_edit.tooltip_text = L.t("새로 받는 에디터는 이 폴더 안에 버전별로 설치돼요.\n이미 설치된 에디터는 옮겨지지 않아요.")
 
 
 func _queue_rebuild() -> void:
@@ -106,7 +106,7 @@ func _on_fetch_failed(message: String) -> void:
 	_status.text = message
 	_status.add_theme_color_override("font_color", HubTheme.ERROR)
 	if Releases.releases.is_empty():
-		HubUI.alert(self, "목록을 불러오지 못했어요", message)
+		HubUI.alert(self, L.t("목록을 불러오지 못했어요"), message)
 
 
 func _rebuild() -> void:
@@ -115,14 +115,14 @@ func _rebuild() -> void:
 		c.queue_free()
 	_status.remove_theme_color_override("font_color")
 	if Releases.busy:
-		_status.text = "목록을 불러오는 중..."
+		_status.text = L.t("목록을 불러오는 중...")
 	elif Releases.fetched_at > 0:
-		_status.text = "마지막 갱신: " + HubUI.rel_time(Releases.fetched_at)
+		_status.text = L.t("마지막 갱신: ") + HubUI.rel_time(Releases.fetched_at)
 	else:
 		_status.text = ""
 	_refresh_btn.disabled = Releases.busy
 	if Releases.releases.is_empty():
-		var l := HubUI.label("목록을 불러오는 중이에요..." if Releases.busy else "목록이 비어 있어요. 오른쪽 위 새로고침을 눌러 주세요.", "DimLabel")
+		var l := HubUI.label(L.t("목록을 불러오는 중이에요...") if Releases.busy else L.t("목록이 비어 있어요. 오른쪽 위 새로고침을 눌러 주세요."), "DimLabel")
 		_list.add_child(l)
 		return
 	var count := 0
@@ -144,7 +144,7 @@ func _rebuild() -> void:
 		if count >= MAX_ROWS:
 			break
 	if count == 0:
-		_list.add_child(HubUI.label("표시할 버전이 없어요.", "DimLabel"))
+		_list.add_child(HubUI.label(L.t("표시할 버전이 없어요."), "DimLabel"))
 
 
 func _build_row(rel: Dictionary) -> Control:
@@ -172,17 +172,17 @@ func _install_button(rel: Dictionary, mono: bool, asset: Dictionary) -> Button:
 	b.focus_mode = Control.FOCUS_NONE
 	b.custom_minimum_size.x = 150
 	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var kind := ".NET" if mono else "표준"
+	var kind := ".NET" if mono else L.t("표준")
 	var tag: String = rel.get("tag", "")
 	if asset.is_empty():
-		b.text = "%s 없음" % kind
+		b.text = L.t("%s 없음") % kind
 		b.disabled = true
 	elif not Hub.find_install_by_version(tag, mono).is_empty():
-		b.text = "%s 설치됨" % kind
+		b.text = L.t("%s 설치됨") % kind
 		b.icon = HubIcons.icon("check")
 		b.disabled = true
 	elif Downloads.is_busy_with(tag, mono, "editor"):
-		b.text = "%s 받는 중..." % kind
+		b.text = L.t("%s 받는 중...") % kind
 		b.disabled = true
 	else:
 		b.text = "%s  (%s)" % [kind, HubUI.human_size(int(asset.get("size", 0)))]

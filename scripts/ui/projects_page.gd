@@ -43,21 +43,21 @@ func _ready() -> void:
 	var toolbar := HBoxContainer.new()
 	toolbar.add_theme_constant_override("separation", 4)
 	root.add_child(toolbar)
-	toolbar.add_child(_tool_button("만들기", "plus", "새 프로젝트 만들기", open_new_project))
-	toolbar.add_child(_tool_button("가져오기", "load", "기존 프로젝트 폴더 가져오기", func() -> void:
-		_dir_dialog.title = "가져올 고도 프로젝트 폴더 선택"
+	toolbar.add_child(_tool_button(L.t("만들기"), "plus", L.t("새 프로젝트 만들기"), open_new_project))
+	toolbar.add_child(_tool_button(L.t("가져오기"), "load", L.t("기존 프로젝트 폴더 가져오기"), func() -> void:
+		_dir_dialog.title = L.t("가져올 고도 프로젝트 폴더 선택")
 		_dir_dialog.popup_centered()))
-	toolbar.add_child(_tool_button("스캔", "search", "폴더 안의 프로젝트를 모두 찾아 추가", func() -> void:
-		_dir_dialog.title = "프로젝트를 찾을 폴더 선택"
+	toolbar.add_child(_tool_button(L.t("스캔"), "search", L.t("폴더 안의 프로젝트를 모두 찾아 추가"), func() -> void:
+		_dir_dialog.title = L.t("프로젝트를 찾을 폴더 선택")
 		_dir_dialog.popup_centered()))
 	_search = LineEdit.new()
-	_search.placeholder_text = "프로젝트 필터 (태그는 tag:이름)"
+	_search.placeholder_text = L.t("프로젝트 필터 (태그는 tag:이름)")
 	_search.right_icon = HubIcons.icon("search", 16, false)
 	_search.clear_button_enabled = true
 	_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_search.text_changed.connect(func(_t: String) -> void: _queue_refresh())
 	toolbar.add_child(_search)
-	var sort_lbl := HubUI.label("  정렬:")
+	var sort_lbl := HubUI.label(L.t("  정렬:"))
 	sort_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	toolbar.add_child(sort_lbl)
 	_sort = OptionButton.new()
@@ -113,7 +113,7 @@ func _ready() -> void:
 	ev.add_child(_empty_desc)
 	body.add_child(_empty)
 
-	_dir_dialog = HubUI.dir_dialog(self, "고도 프로젝트 폴더 선택", Hub.import_path)
+	_dir_dialog = HubUI.dir_dialog(self, L.t("고도 프로젝트 폴더 선택"), Hub.import_path)
 
 	Hub.projects_changed.connect(_queue_refresh)
 	Hub.installs_changed.connect(_queue_refresh)
@@ -132,36 +132,36 @@ func _build_side_menu() -> Control:
 	var edit_row := HBoxContainer.new()
 	edit_row.add_theme_constant_override("separation", 4)
 	side.add_child(edit_row)
-	_btn_edit = _side_button("편집", "edit", func() -> void: _open(_selected, "", true))
+	_btn_edit = _side_button(L.t("편집"), "edit", func() -> void: _open(_selected, "", true))
 	_btn_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	edit_row.add_child(_btn_edit)
 	_btn_edit_options = MenuButton.new()
 	_btn_edit_options.flat = false
 	_btn_edit_options.icon = HubIcons.icon("collapse")
-	_btn_edit_options.tooltip_text = "옵션"
+	_btn_edit_options.tooltip_text = L.t("옵션")
 	_btn_edit_options.focus_mode = Control.FOCUS_NONE
 	_btn_edit_options.about_to_popup.connect(_fill_edit_options)
 	_btn_edit_options.get_popup().id_pressed.connect(_on_edit_option)
 	edit_row.add_child(_btn_edit_options)
 
-	_btn_run = _side_button("실행", "play", func() -> void: _open(_selected, "", false))
+	_btn_run = _side_button(L.t("실행"), "play", func() -> void: _open(_selected, "", false))
 	side.add_child(_btn_run)
-	_btn_rename = _side_button("이름 바꾸기", "rename", _rename_selected)
+	_btn_rename = _side_button(L.t("이름 바꾸기"), "rename", _rename_selected)
 	side.add_child(_btn_rename)
-	_btn_duplicate = _side_button("복제", "duplicate", _duplicate_selected)
+	_btn_duplicate = _side_button(L.t("복제"), "duplicate", _duplicate_selected)
 	side.add_child(_btn_duplicate)
-	_btn_tags = _side_button("태그 설정", "tags", _tags_selected)
+	_btn_tags = _side_button(L.t("태그 설정"), "tags", _tags_selected)
 	side.add_child(_btn_tags)
-	_btn_remove = _side_button("제거", "trash", _remove_selected)
+	_btn_remove = _side_button(L.t("제거"), "trash", _remove_selected)
 	side.add_child(_btn_remove)
-	_btn_remove_missing = _side_button("누락된 부분 제거", "clear", _remove_missing)
+	_btn_remove_missing = _side_button(L.t("누락된 부분 제거"), "clear", _remove_missing)
 	side.add_child(_btn_remove_missing)
 
 	var fill := Control.new()
 	fill.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	side.add_child(fill)
-	var donate := _side_button("기부", "heart", func() -> void: OS.shell_open(DONATE_URL))
-	donate.tooltip_text = "Godot 엔진 개발 후원 (fund.godotengine.org)"
+	var donate := _side_button(L.t("기부"), "heart", func() -> void: OS.shell_open(DONATE_URL))
+	donate.tooltip_text = L.t("Godot 엔진 개발 후원 (fund.godotengine.org)")
 	side.add_child(donate)
 	return side
 
@@ -199,11 +199,11 @@ func _update_side_menu() -> void:
 func _fill_edit_options() -> void:
 	var pm := _btn_edit_options.get_popup()
 	pm.clear()
-	pm.add_item("자세한 로그 모드로 편집 (--verbose)", 0)
-	pm.add_item("복구 모드로 편집 (--recovery-mode)", 1)
+	pm.add_item(L.t("자세한 로그 모드로 편집 (--verbose)"), 0)
+	pm.add_item(L.t("복구 모드로 편집 (--recovery-mode)"), 1)
 	var insts := Hub.sorted_installs()
 	if not insts.is_empty():
-		pm.add_separator("다른 버전으로 편집")
+		pm.add_separator(L.t("다른 버전으로 편집"))
 		for i in insts.size():
 			pm.add_item("Godot " + Hub.install_label(insts[i]), 100 + i)
 			pm.set_item_metadata(pm.item_count - 1, insts[i].id)
@@ -214,8 +214,8 @@ func _on_edit_option(id: int) -> void:
 		0:
 			_open(_selected, "", true, PackedStringArray(["--verbose"]))
 		1:
-			HubUI.confirm(self, "복구 모드", "복구 모드에서는 플러그인·툴 스크립트 같은 코드가 실행되지 않아요.\n프로젝트를 열 때 에디터가 멈추거나 튕길 때 써요.\n\n복구 모드로 열까요?",
-				"열기", _open.bind(_selected, "", true, PackedStringArray(["--recovery-mode"])))
+			HubUI.confirm(self, L.t("복구 모드"), L.t("복구 모드에서는 플러그인·툴 스크립트 같은 코드가 실행되지 않아요.\n프로젝트를 열 때 에디터가 멈추거나 튕길 때 써요.\n\n복구 모드로 열까요?"),
+				L.t("열기"), _open.bind(_selected, "", true, PackedStringArray(["--recovery-mode"])))
 		_:
 			var pm := _btn_edit_options.get_popup()
 			_open(_selected, str(pm.get_item_metadata(pm.get_item_index(id))), true)
@@ -224,13 +224,13 @@ func _on_edit_option(id: int) -> void:
 func _rename_selected() -> void:
 	var path := _selected
 	var current := str(Hub.project_info(path).name)
-	HubUI.prompt(self, "프로젝트 이름 바꾸기", "새 이름 (폴더 이름은 바뀌지 않아요)", current, "이름 바꾸기",
+	HubUI.prompt(self, L.t("프로젝트 이름 바꾸기"), L.t("새 이름 (폴더 이름은 바뀌지 않아요)"), current, L.t("이름 바꾸기"),
 		func(text: String) -> void:
 			if text.strip_edges() == "":
 				return
 			var err := Hub.rename_project(path, text.strip_edges())
 			if err != "":
-				HubUI.alert(self, "이름 바꾸기", err))
+				HubUI.alert(self, L.t("이름 바꾸기"), err))
 
 
 func _tags_selected() -> void:
@@ -242,32 +242,32 @@ func _tags_selected() -> void:
 			if not all_tags.has(t):
 				all_tags.append(t)
 	all_tags.sort()
-	var hint := "쉼표로 구분해서 입력해요."
+	var hint := L.t("쉼표로 구분해서 입력해요.")
 	if not all_tags.is_empty():
-		hint += "\n쓰고 있는 태그: " + ", ".join(all_tags)
-	HubUI.prompt(self, "태그 설정 — " + str(info.name), hint, ", ".join(info.get("tags", [])), "저장",
+		hint += L.t("\n쓰고 있는 태그: ") + ", ".join(all_tags)
+	HubUI.prompt(self, L.t("태그 설정 — ") + str(info.name), hint, ", ".join(info.get("tags", [])), L.t("저장"),
 		func(text: String) -> void:
 			var err := Hub.set_project_tags(path, Array(text.split(",", false)))
 			if err != "":
-				HubUI.alert(self, "태그 설정", err))
+				HubUI.alert(self, L.t("태그 설정"), err))
 
 
 func _duplicate_selected() -> void:
 	var src := _selected
-	var name := str(Hub.project_info(src).name) + " (복사본)"
+	var name := str(Hub.project_info(src).name) + L.t(" (복사본)")
 	var d := ConfirmationDialog.new()
-	d.title = "프로젝트 복제"
-	d.ok_button_text = "복제"
-	d.cancel_button_text = "취소"
+	d.title = L.t("프로젝트 복제")
+	d.ok_button_text = L.t("복제")
+	d.cancel_button_text = L.t("취소")
 	d.dialog_hide_on_ok = false
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 6)
 	d.add_child(vb)
-	vb.add_child(HubUI.label("프로젝트 이름", "SectionLabel"))
+	vb.add_child(HubUI.label(L.t("프로젝트 이름"), "SectionLabel"))
 	var name_edit := LineEdit.new()
 	name_edit.text = name
 	vb.add_child(name_edit)
-	vb.add_child(HubUI.label("만들 위치", "SectionLabel"))
+	vb.add_child(HubUI.label(L.t("만들 위치"), "SectionLabel"))
 	var loc := LineEdit.new()
 	loc.text = src.get_base_dir().replace("/", "\\")
 	vb.add_child(loc)
@@ -277,7 +277,7 @@ func _duplicate_selected() -> void:
 	var target := func() -> String:
 		return Hub.normalize_path(loc.text).path_join(name_edit.text.strip_edges().validate_filename())
 	var update := func(_t: String) -> void:
-		preview.text = "복사될 폴더: " + str(target.call()).replace("/", "\\") + "\n(.godot 캐시 폴더는 복사하지 않아요)"
+		preview.text = L.t("복사될 폴더: ") + str(target.call()).replace("/", "\\") + L.t("\n(.godot 캐시 폴더는 복사하지 않아요)")
 	name_edit.text_changed.connect(update)
 	loc.text_changed.connect(update)
 	update.call("")
@@ -287,7 +287,7 @@ func _duplicate_selected() -> void:
 			return
 		var err := Hub.duplicate_project(src, target.call(), new_name)
 		if err != "":
-			HubUI.alert(self, "프로젝트 복제", err)
+			HubUI.alert(self, L.t("프로젝트 복제"), err)
 		else:
 			d.hide())
 	d.visibility_changed.connect(func() -> void:
@@ -302,23 +302,23 @@ func _duplicate_selected() -> void:
 func _remove_selected() -> void:
 	var path := _selected
 	var d := ConfirmationDialog.new()
-	d.title = "프로젝트 제거"
-	d.ok_button_text = "제거"
-	d.cancel_button_text = "취소"
+	d.title = L.t("프로젝트 제거")
+	d.ok_button_text = L.t("제거")
+	d.cancel_button_text = L.t("취소")
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 10)
 	d.add_child(vb)
-	var msg := HubUI.label("'%s'을(를) 목록에서 제거할까요?" % Hub.project_info(path).name, "", 420)
+	var msg := HubUI.label(L.t("'%s'을(를) 목록에서 제거할까요?") % Hub.project_info(path).name, "", 420)
 	msg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vb.add_child(msg)
 	var delete_check := CheckBox.new()
-	delete_check.text = "프로젝트 폴더 내용도 삭제 (휴지통으로 이동)"
+	delete_check.text = L.t("프로젝트 폴더 내용도 삭제 (휴지통으로 이동)")
 	delete_check.visible = DirAccess.dir_exists_absolute(path)
 	vb.add_child(delete_check)
 	d.confirmed.connect(func() -> void:
 		var err := Hub.erase_project(path, delete_check.button_pressed)
 		if err != "":
-			HubUI.alert(self, "프로젝트 제거", err))
+			HubUI.alert(self, L.t("프로젝트 제거"), err))
 	d.visibility_changed.connect(func() -> void:
 		if not d.visible:
 			d.queue_free())
@@ -328,8 +328,8 @@ func _remove_selected() -> void:
 
 func _remove_missing() -> void:
 	var n := Hub.missing_project_count()
-	HubUI.confirm(self, "누락된 프로젝트 제거", "폴더를 찾을 수 없는 프로젝트 %d개를 목록에서 제거할까요?\n프로젝트 파일은 건드리지 않아요." % n, "제거",
-		func() -> void: Hub.toast.emit("누락된 프로젝트 %d개를 목록에서 제거했어요" % Hub.remove_missing_projects()))
+	HubUI.confirm(self, L.t("누락된 프로젝트 제거"), L.t("폴더를 찾을 수 없는 프로젝트 %d개를 목록에서 제거할까요?\n프로젝트 파일은 건드리지 않아요.") % n, L.t("제거"),
+		func() -> void: Hub.toast.emit(L.t("누락된 프로젝트 %d개를 목록에서 제거했어요") % Hub.remove_missing_projects()))
 
 
 # ─────────────────────────── 목록 ───────────────────────────
@@ -373,11 +373,11 @@ func _refresh() -> void:
 		row.set_selected(Hub.same_path(row.path, _selected))
 	_empty.visible = items.is_empty()
 	if Hub.projects.is_empty():
-		_empty_title.text = "아직 등록된 프로젝트가 없어요"
-		_empty_desc.text = "'가져오기'·'스캔'으로 기존 프로젝트를 추가하거나 '만들기'로 새로 만드세요.\n프로젝트 폴더를 이 창에 끌어다 놓아도 돼요."
+		_empty_title.text = L.t("아직 등록된 프로젝트가 없어요")
+		_empty_desc.text = L.t("'가져오기'·'스캔'으로 기존 프로젝트를 추가하거나 '만들기'로 새로 만드세요.\n프로젝트 폴더를 이 창에 끌어다 놓아도 돼요.")
 	else:
-		_empty_title.text = "검색 결과가 없어요"
-		_empty_desc.text = "다른 이름이나 경로로 검색해 보세요."
+		_empty_title.text = L.t("검색 결과가 없어요")
+		_empty_desc.text = L.t("다른 이름이나 경로로 검색해 보세요.")
 	_update_side_menu()
 	await get_tree().process_frame
 	_scroll.scroll_vertical = scroll_pos
@@ -446,7 +446,7 @@ func _on_row_action(path: String, what: String, arg: String) -> void:
 			OS.shell_show_in_file_manager(ProjectSettings.globalize_path(path.path_join("project.godot")))
 		"copy":
 			DisplayServer.clipboard_set(path.replace("/", "\\"))
-			Hub.toast.emit("경로를 복사했어요")
+			Hub.toast.emit(L.t("경로를 복사했어요"))
 		"remove":
 			_select(path)
 			_remove_selected()
@@ -461,19 +461,19 @@ func _open(path: String, install_id: String, editor: bool, extra := PackedString
 		install_id = Hub.get_project(path).get("editor", "")
 	var inst := Hub.find_install(install_id)
 	if inst.is_empty():
-		HubUI.alert(self, "에디터가 없어요", "이 프로젝트에 지정된 에디터가 없어요.\n'에디터 버전'에서 버전을 고르거나, 설치 페이지에서 에디터를 설치해 주세요.")
+		HubUI.alert(self, L.t("에디터가 없어요"), L.t("이 프로젝트에 지정된 에디터가 없어요.\n'에디터 버전'에서 버전을 고르거나, 설치 페이지에서 에디터를 설치해 주세요."))
 		return
 	var info := Hub.project_info(path, true)
 	if not info.valid:
-		HubUI.alert(self, "프로젝트를 찾을 수 없어요", "project.godot 파일이 없어요:\n" + path)
+		HubUI.alert(self, L.t("프로젝트를 찾을 수 없어요"), L.t("project.godot 파일이 없어요:\n") + path)
 		return
 	var warn := ""
 	if editor:
 		warn = _version_warning(info, inst)
 		if Hub.is_running(path):
-			warn = "이 프로젝트는 이미 에디터에서 열려 있는 것 같아요.\n하나 더 열까요?\n\n" + warn
+			warn = L.t("이 프로젝트는 이미 에디터에서 열려 있는 것 같아요.\n하나 더 열까요?\n\n") + warn
 	if warn != "":
-		HubUI.confirm(self, "프로젝트 열기", warn.strip_edges(), "열기", _launch.bind(path, install_id, editor, extra))
+		HubUI.confirm(self, L.t("프로젝트 열기"), warn.strip_edges(), L.t("열기"), _launch.bind(path, install_id, editor, extra))
 	else:
 		_launch(path, install_id, editor, extra)
 
@@ -481,7 +481,7 @@ func _open(path: String, install_id: String, editor: bool, extra := PackedString
 func _launch(path: String, install_id: String, editor: bool, extra := PackedStringArray()) -> void:
 	var err := Hub.open_project(path, install_id, editor, extra)
 	if err != "":
-		HubUI.alert(self, "실행하지 못했어요", err)
+		HubUI.alert(self, L.t("실행하지 못했어요"), err)
 
 
 func _version_warning(info: Dictionary, inst: Dictionary) -> String:
@@ -492,11 +492,11 @@ func _version_warning(info: Dictionary, inst: Dictionary) -> String:
 		return ""
 	var ver_text := str(inst.version)
 	if parts[0].to_int() != ev.major:
-		return "이 프로젝트는 Godot %s용이에요.\nGodot %s(으)로 열면 프로젝트가 변환되어, 원래 버전에서 다시 열 수 없게 될 수 있어요.\n\n먼저 백업해 두는 걸 추천해요. 계속할까요?" % [pv, ver_text]
+		return L.t("이 프로젝트는 Godot %s용이에요.\nGodot %s(으)로 열면 프로젝트가 변환되어, 원래 버전에서 다시 열 수 없게 될 수 있어요.\n\n먼저 백업해 두는 걸 추천해요. 계속할까요?") % [pv, ver_text]
 	if parts.size() > 1 and parts[1].is_valid_int():
 		var pmin := parts[1].to_int()
 		if ev.minor > pmin:
-			return "이 프로젝트는 Godot %s에서 저장됐어요.\nGodot %s(으)로 열고 저장하면 %s에서는 제대로 열리지 않을 수 있어요. 계속할까요?" % [pv, ver_text, pv]
+			return L.t("이 프로젝트는 Godot %s에서 저장됐어요.\nGodot %s(으)로 열고 저장하면 %s에서는 제대로 열리지 않을 수 있어요. 계속할까요?") % [pv, ver_text, pv]
 		if ev.minor < pmin:
-			return "이 프로젝트는 더 새로운 Godot %s에서 저장됐어요.\n이전 버전(%s)으로 열면 일부 기능이 깨질 수 있어요. 계속할까요?" % [pv, ver_text]
+			return L.t("이 프로젝트는 더 새로운 Godot %s에서 저장됐어요.\n이전 버전(%s)으로 열면 일부 기능이 깨질 수 있어요. 계속할까요?") % [pv, ver_text]
 	return ""

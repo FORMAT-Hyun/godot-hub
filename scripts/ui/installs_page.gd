@@ -30,16 +30,16 @@ func _ready() -> void:
 	toolbar.add_theme_constant_override("separation", 4)
 	root.add_child(toolbar)
 	var install := Button.new()
-	install.text = "에디터 설치"
+	install.text = L.t("에디터 설치")
 	install.icon = HubIcons.icon("download")
 	install.theme_type_variation = "PrimaryButton"
 	install.focus_mode = Control.FOCUS_NONE
 	install.pressed.connect(open_install_dialog)
 	toolbar.add_child(install)
 	var locate := Button.new()
-	locate.text = "위치 지정"
+	locate.text = L.t("위치 지정")
 	locate.icon = HubIcons.icon("load")
-	locate.tooltip_text = "이미 PC에 있는 고도 실행 파일(.exe)을 등록해요"
+	locate.tooltip_text = L.t("이미 PC에 있는 고도 실행 파일(.exe)을 등록해요")
 	locate.focus_mode = Control.FOCUS_NONE
 	locate.pressed.connect(func() -> void: _file_dialog.popup_centered())
 	toolbar.add_child(locate)
@@ -89,24 +89,24 @@ func _ready() -> void:
 	var big := HubUI.icon_rect(HubIcons.icon("cube", 56), 56, HubTheme.TEXT_DISABLED)
 	big.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	ev.add_child(big)
-	var t := HubUI.label("설치된 에디터가 없어요", "TitleLabel")
+	var t := HubUI.label(L.t("설치된 에디터가 없어요"), "TitleLabel")
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ev.add_child(t)
-	var d := HubUI.label("'에디터 설치'로 원하는 버전을 받거나,\n'위치 지정'으로 이미 있는 Godot 실행 파일을 등록하세요.", "DimLabel")
+	var d := HubUI.label(L.t("'에디터 설치'로 원하는 버전을 받거나,\n'위치 지정'으로 이미 있는 Godot 실행 파일을 등록하세요."), "DimLabel")
 	d.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ev.add_child(d)
 	body.add_child(_empty)
 
 	_file_dialog = FileDialog.new()
-	_file_dialog.title = "Godot 실행 파일 선택"
+	_file_dialog.title = L.t("Godot 실행 파일 선택")
 	_file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	_file_dialog.access = FileDialog.ACCESS_FILESYSTEM
 	_file_dialog.use_native_dialog = true
-	_file_dialog.filters = PackedStringArray(["*.exe ; Godot 실행 파일"])
+	_file_dialog.filters = PackedStringArray([L.t("*.exe ; Godot 실행 파일")])
 	_file_dialog.file_selected.connect(func(p: String) -> void:
 		var err := Hub.register_exe(p)
 		if err != "":
-			HubUI.alert(self, "등록하지 못했어요", err))
+			HubUI.alert(self, L.t("등록하지 못했어요"), err))
 	add_child(_file_dialog)
 
 	Hub.installs_changed.connect(_queue_refresh)
@@ -127,13 +127,13 @@ func open_editor_settings(inst: Dictionary, search := "") -> void:
 		if search != "":
 			_editor_settings_dialog.set_search(search)
 		if msg != "":
-			HubUI.alert(self, "에디터 설정", msg)
+			HubUI.alert(self, L.t("에디터 설정"), msg)
 		return
 	var err := SettingsHelper.open(inst)
 	if err != "":
-		HubUI.alert(self, "에디터 설정", err)
+		HubUI.alert(self, L.t("에디터 설정"), err)
 	else:
-		Hub.toast.emit("Godot %s 에디터 설정 창을 여는 중..." % Hub.install_label(inst))
+		Hub.toast.emit(L.t("Godot %s 에디터 설정 창을 여는 중...") % Hub.install_label(inst))
 
 
 func open_install_dialog() -> void:
@@ -176,7 +176,7 @@ func _refresh() -> void:
 		shown += 1
 	_empty.visible = Hub.installs.is_empty()
 	if shown == 0 and not Hub.installs.is_empty():
-		var l := HubUI.label("이 조건에 맞는 에디터가 없어요.", "DimLabel")
+		var l := HubUI.label(L.t("이 조건에 맞는 에디터가 없어요."), "DimLabel")
 		_list.add_child(l)
 	_select(_selected)
 
@@ -196,7 +196,7 @@ func _build_row(inst: Dictionary) -> Control:
 	var is_default: bool = Hub.settings.get("default_editor", "") == inst.id
 
 	# ☆ = 기본 버전 (프로젝트 탭의 즐겨찾기 자리)
-	var star := HubUI.flat_icon_button("star_fill" if is_default else "star", "기본 버전" if is_default else "기본 버전으로 설정")
+	var star := HubUI.flat_icon_button("star_fill" if is_default else "star", L.t("기본 버전") if is_default else L.t("기본 버전으로 설정"))
 	star.custom_minimum_size = Vector2(26, 26)
 	star.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	if is_default:
@@ -222,18 +222,22 @@ func _build_row(inst: Dictionary) -> Control:
 	title_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vb.add_child(title_row)
 	var version := str(inst.get("version", ""))
-	var name_lbl := HubUI.label("Godot " + (version if version != "" else "(버전 알 수 없음)"), "TitleLabel")
+	var name_lbl := HubUI.label("Godot " + (version if version != "" else L.t("(버전 알 수 없음)")), "TitleLabel")
 	if not exists:
 		name_lbl.add_theme_color_override("font_color", HubTheme.TEXT_DISABLED)
 	title_row.add_child(name_lbl)
 	if mono:
 		title_row.add_child(HubUI.tag(".NET", HubTheme.DOTNET))
 	if version != "" and not GodotVersion.is_stable(version):
-		title_row.add_child(HubUI.tag("프리릴리스", HubTheme.WARNING))
+		title_row.add_child(HubUI.tag(L.t("프리릴리스"), HubTheme.WARNING))
 	if is_default:
-		title_row.add_child(HubUI.tag("기본", HubTheme.ACCENT))
+		title_row.add_child(HubUI.tag(L.t("기본"), HubTheme.ACCENT))
 	if not exists:
-		title_row.add_child(HubUI.tag("파일 없음", HubTheme.ERROR))
+		title_row.add_child(HubUI.tag(L.t("파일 없음"), HubTheme.ERROR))
+	if _templates_busy(inst):
+		title_row.add_child(HubUI.tag(L.t("템플릿 받는 중"), HubTheme.WARNING))
+	elif Hub.has_templates(inst):
+		title_row.add_child(HubUI.tag(L.t("템플릿"), HubTheme.SUCCESS))
 
 	# 둘째 줄: 개발자 · 종류 ... 받은 날짜 (매니저의 경로 · 수정 시각 자리)
 	var info_row := HBoxContainer.new()
@@ -243,13 +247,13 @@ func _build_row(inst: Dictionary) -> Control:
 	var cube := HubUI.icon_rect(HubIcons.icon("cube"), 16, HubTheme.TEXT_DIM)
 	cube.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	info_row.add_child(cube)
-	var dev := HubUI.label("Godot Engine  ·  " + (".NET" if mono else "표준"), "DimLabel")
+	var dev := HubUI.label("Godot Engine  ·  " + (".NET" if mono else L.t("표준")), "DimLabel")
 	dev.add_theme_font_size_override("font_size", 13)
 	dev.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info_row.add_child(dev)
 	var added := Hub.install_added(inst)
 	var bias := int(Time.get_time_zone_from_system().get("bias", 0))
-	var date_text := Time.get_datetime_string_from_unix_time(added + bias * 60, true) if added > 0 else "날짜 모름"
+	var date_text := Time.get_datetime_string_from_unix_time(added + bias * 60, true) if added > 0 else L.t("날짜 모름")
 	var date := HubUI.label(date_text, "DimLabel", ProjectRow.DATE_WIDTH)
 	date.add_theme_font_size_override("font_size", 13)
 	date.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -292,16 +296,17 @@ func _select(id: String) -> void:
 
 func _popup_menu(inst: Dictionary) -> void:
 	var pm := PopupMenu.new()
-	pm.add_icon_item(HubIcons.icon("gear"), "에디터 설정 열기", 0)
-	pm.add_icon_item(HubIcons.icon("star"), "기본 버전으로 설정", 1)
+	pm.add_icon_item(HubIcons.icon("gear"), L.t("에디터 설정 열기"), 0)
+	pm.add_icon_item(HubIcons.icon("star"), L.t("기본 버전으로 설정"), 1)
 	pm.set_item_disabled(pm.get_item_index(1), Hub.settings.get("default_editor", "") == inst.id)
-	pm.add_check_item("독립 모드 (설정을 이 버전 폴더에 따로 저장)", 2)
+	pm.add_check_item(L.t("독립 모드 (설정을 이 버전 폴더에 따로 저장)"), 2)
 	pm.set_item_checked(pm.get_item_index(2), Hub.is_self_contained(inst))
+	pm.add_icon_item(HubIcons.icon("download"), L.t("내보내기 템플릿 관리...") if Hub.has_templates(inst) else L.t("내보내기 템플릿 설치..."), 7)
 	pm.add_separator()
-	pm.add_icon_item(HubIcons.icon("folder"), "설치 폴더 열기", 4)
-	pm.add_icon_item(HubIcons.icon("more"), "속성", 6)
+	pm.add_icon_item(HubIcons.icon("folder"), L.t("설치 폴더 열기"), 4)
+	pm.add_icon_item(HubIcons.icon("more"), L.t("속성"), 6)
 	pm.add_separator()
-	pm.add_icon_item(HubIcons.icon("trash"), "제거" if inst.get("managed", false) else "목록에서 제거", 5)
+	pm.add_icon_item(HubIcons.icon("trash"), L.t("제거") if inst.get("managed", false) else L.t("목록에서 제거"), 5)
 	pm.id_pressed.connect(_on_menu.bind(inst))
 	pm.popup_hide.connect(pm.queue_free)
 	add_child(pm)
@@ -314,13 +319,14 @@ func _build_side_menu() -> Control:
 	var side := VBoxContainer.new()
 	side.custom_minimum_size.x = 176
 	side.add_theme_constant_override("separation", 6)
-	_side.settings = _side_button(side, "에디터 설정", "gear", 0)
-	_side.default = _side_button(side, "기본 버전으로", "star", 1)
-	_side.sc = _side_button(side, "독립 모드", "check", 2)
-	_side.sc.tooltip_text = "에디터 설정을 이 버전 폴더 안에 따로 저장해요 (._sc_)"
-	_side.folder = _side_button(side, "설치 폴더 열기", "folder", 4)
-	_side.props = _side_button(side, "속성", "more", 6)
-	_side.remove = _side_button(side, "제거", "trash", 5)
+	_side.settings = _side_button(side, L.t("에디터 설정"), "gear", 0)
+	_side.default = _side_button(side, L.t("기본 버전으로"), "star", 1)
+	_side.sc = _side_button(side, L.t("독립 모드"), "check", 2)
+	_side.sc.tooltip_text = L.t("에디터 설정을 이 버전 폴더 안에 따로 저장해요 (._sc_)")
+	_side.templates = _side_button(side, L.t("템플릿 설치"), "download", 7)
+	_side.folder = _side_button(side, L.t("설치 폴더 열기"), "folder", 4)
+	_side.props = _side_button(side, L.t("속성"), "more", 6)
+	_side.remove = _side_button(side, L.t("제거"), "trash", 5)
 	return side
 
 
@@ -352,9 +358,16 @@ func _update_side_menu() -> void:
 	_side.sc.disabled = not exists
 	_side.default.disabled = not has or Hub.settings.get("default_editor", "") == _selected
 	var sc: bool = has and Hub.is_self_contained(inst)
-	_side.sc.text = "독립 모드: 켜짐" if sc else "독립 모드: 꺼짐"
+	_side.sc.text = L.t("독립 모드: 켜짐") if sc else L.t("독립 모드: 꺼짐")
 	_side.sc.icon = HubIcons.icon("check" if sc else "close")
-	_side.remove.text = "제거" if not has or inst.get("managed", false) else "목록에서 제거"
+	_side.remove.text = L.t("제거") if not has or inst.get("managed", false) else L.t("목록에서 제거")
+	_side.templates.disabled = not exists
+	if has and _templates_busy(inst):
+		_side.templates.text = L.t("템플릿 받는 중...")
+	elif has and Hub.has_templates(inst):
+		_side.templates.text = L.t("템플릿 관리")
+	else:
+		_side.templates.text = L.t("템플릿 설치")
 
 
 func _on_menu(id: int, inst: Dictionary) -> void:
@@ -371,13 +384,54 @@ func _on_menu(id: int, inst: Dictionary) -> void:
 			_confirm_remove(inst)
 		6:
 			_show_properties(inst)
+		7:
+			_templates_action(inst)
+
+
+# ─────────────────────────── 내보내기 템플릿 ───────────────────────────
+
+func _templates_busy(inst: Dictionary) -> bool:
+	return Downloads.is_busy_with(str(inst.get("version", "")), bool(inst.get("mono", false)), "templates")
+
+
+func _templates_action(inst: Dictionary) -> void:
+	var label := "Godot " + Hub.install_label(inst)
+	if _templates_busy(inst):
+		Hub.toast.emit(L.t("%s 템플릿을 받는 중이에요") % label)
+		return
+	if Hub.has_templates(inst):
+		var d := ConfirmationDialog.new()
+		d.title = L.t("내보내기 템플릿 — ") + label
+		d.dialog_text = L.t("이 에디터의 내보내기 템플릿이 설치돼 있어요.\n%s") % Hub.templates_dir(inst).replace("/", "\\")
+		d.ok_button_text = L.t("템플릿 제거")
+		d.cancel_button_text = L.t("닫기")
+		d.add_button(L.t("폴더 열기"), false, "open")
+		d.custom_action.connect(func(_a: StringName) -> void:
+			OS.shell_open(ProjectSettings.globalize_path(Hub.templates_dir(inst)))
+			d.hide())
+		d.confirmed.connect(func() -> void:
+			var err := Hub.remove_templates(inst)
+			if err != "":
+				HubUI.alert(self, L.t("템플릿 제거"), err)
+			else:
+				Hub.toast.emit(L.t("%s 템플릿을 휴지통으로 옮겼어요") % label))
+		d.visibility_changed.connect(func() -> void:
+			if not d.visible:
+				d.queue_free())
+		add_child(d)
+		d.popup_centered()
+		return
+	var size := L.t("버전에 따라 약 0.3~1.2GB")
+	HubUI.confirm(self, L.t("내보내기 템플릿 설치"),
+		L.t("%s 내보내기 템플릿을 받을까요? (%s)\n게임을 Windows · Android · 웹 등으로 내보낼 때 필요해요.\n\n설치 위치:\n%s") % [label, size, Hub.templates_dir(inst).replace("/", "\\")],
+		L.t("받기"), func() -> void: Downloads.install_templates(inst))
 
 
 ## 에디터 속성 창: 버전 · 종류 · 받은 날짜 · 경로 · 크기 · 쓰는 프로젝트
 func _show_properties(inst: Dictionary) -> void:
 	var d := AcceptDialog.new()
-	d.title = "속성 — Godot " + Hub.install_label(inst)
-	d.ok_button_text = "닫기"
+	d.title = L.t("속성 — Godot ") + Hub.install_label(inst)
+	d.ok_button_text = L.t("닫기")
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 16)
@@ -391,15 +445,16 @@ func _show_properties(inst: Dictionary) -> void:
 		if rec.get("editor", "") == inst.id:
 			names.append(str(Hub.project_info(rec.path).name))
 	var rows := [
-		["버전", "Godot " + str(inst.get("version", "?"))],
-		["종류", ".NET (C#)" if inst.get("mono", false) else "표준"],
-		["개발자", "Godot Engine"],
-		["받은 날짜", Time.get_datetime_string_from_unix_time(added + bias * 60, true) if added > 0 else "모름"],
-		["설치 방식", "허브에서 설치" if inst.get("managed", false) else "직접 등록"],
-		["기본 버전", "예" if Hub.settings.get("default_editor", "") == inst.id else "아니요"],
-		["독립 모드", "켜짐 (설정을 이 폴더에 따로 저장)" if Hub.is_self_contained(inst) else "꺼짐"],
-		["폴더 크기", HubUI.human_size(_dir_size(exe.get_base_dir())) if FileAccess.file_exists(exe) else "파일 없음"],
-		["쓰는 프로젝트", ("%d개: %s" % [names.size(), ", ".join(names)]) if not names.is_empty() else "없음"],
+		[L.t("버전"), "Godot " + str(inst.get("version", "?"))],
+		[L.t("종류"), ".NET (C#)" if inst.get("mono", false) else L.t("표준")],
+		[L.t("개발자"), "Godot Engine"],
+		[L.t("받은 날짜"), Time.get_datetime_string_from_unix_time(added + bias * 60, true) if added > 0 else L.t("모름")],
+		[L.t("설치 방식"), L.t("허브에서 설치") if inst.get("managed", false) else L.t("직접 등록")],
+		[L.t("기본 버전"), L.t("예") if Hub.settings.get("default_editor", "") == inst.id else L.t("아니요")],
+		[L.t("독립 모드"), L.t("켜짐 (설정을 이 폴더에 따로 저장)") if Hub.is_self_contained(inst) else L.t("꺼짐")],
+		[L.t("내보내기 템플릿"), (L.t("설치됨 (") + Hub.templates_dir(inst).replace("/", "\\") + ")") if Hub.has_templates(inst) else L.t("설치 안 됨")],
+		[L.t("폴더 크기"), HubUI.human_size(_dir_size(exe.get_base_dir())) if FileAccess.file_exists(exe) else L.t("파일 없음")],
+		[L.t("쓰는 프로젝트"), (L.t("%d개: %s") % [names.size(), ", ".join(names)]) if not names.is_empty() else L.t("없음")],
 	]
 	for r in rows:
 		var k := HubUI.label(r[0], "DimLabel")
@@ -408,17 +463,17 @@ func _show_properties(inst: Dictionary) -> void:
 		var v := HubUI.label(r[1], "", 380)
 		v.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		grid.add_child(v)
-	grid.add_child(HubUI.label("실행 파일", "DimLabel"))
+	grid.add_child(HubUI.label(L.t("실행 파일"), "DimLabel"))
 	var path_row := HBoxContainer.new()
 	var path_edit := LineEdit.new()
 	path_edit.text = exe.replace("/", "\\")
 	path_edit.editable = false
 	path_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	path_row.add_child(path_edit)
-	var copy := HubUI.flat_icon_button("copy", "경로 복사")
+	var copy := HubUI.flat_icon_button("copy", L.t("경로 복사"))
 	copy.pressed.connect(func() -> void:
 		DisplayServer.clipboard_set(path_edit.text)
-		Hub.toast.emit("경로를 복사했어요"))
+		Hub.toast.emit(L.t("경로를 복사했어요")))
 	path_row.add_child(copy)
 	grid.add_child(path_row)
 	d.visibility_changed.connect(func() -> void:
@@ -442,16 +497,16 @@ static func _dir_size(dir: String) -> int:
 func _confirm_remove(inst: Dictionary) -> void:
 	var label := Hub.install_label(inst)
 	var used := Hub.projects_using(inst.id)
-	var note := ("\n\n이 버전을 쓰는 프로젝트 %d개는 에디터를 다시 골라야 해요." % used) if used > 0 else ""
+	var note := (L.t("\n\n이 버전을 쓰는 프로젝트 %d개는 에디터를 다시 골라야 해요.") % used) if used > 0 else ""
 	if inst.get("managed", false):
-		HubUI.confirm(self, "에디터 제거", "Godot %s 을(를) 제거할까요?\n설치 폴더를 휴지통으로 옮겨요.\n%s%s" % [label, str(inst.path).replace("/", "\\"), note],
-			"제거", _do_remove.bind(inst.id, true))
+		HubUI.confirm(self, L.t("에디터 제거"), L.t("Godot %s 을(를) 제거할까요?\n설치 폴더를 휴지통으로 옮겨요.\n%s%s") % [label, str(inst.path).replace("/", "\\"), note],
+			L.t("제거"), _do_remove.bind(inst.id, true))
 	else:
-		HubUI.confirm(self, "목록에서 제거", "Godot %s 을(를) 목록에서 제거할까요?\n직접 등록한 에디터라 파일은 그대로 둬요.%s" % [label, note],
-			"제거", _do_remove.bind(inst.id, false))
+		HubUI.confirm(self, L.t("목록에서 제거"), L.t("Godot %s 을(를) 목록에서 제거할까요?\n직접 등록한 에디터라 파일은 그대로 둬요.%s") % [label, note],
+			L.t("제거"), _do_remove.bind(inst.id, false))
 
 
 func _do_remove(id: String, delete_files: bool) -> void:
 	var err := Hub.remove_install(id, delete_files)
 	if err != "":
-		HubUI.alert(self, "제거하지 못했어요", err)
+		HubUI.alert(self, L.t("제거하지 못했어요"), err)

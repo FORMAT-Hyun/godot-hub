@@ -144,7 +144,7 @@ static func open(inst: Dictionary) -> String:
 		return r.error
 	var pid := OS.create_process(r.exe, PackedStringArray(["--path", r.dir, "--editor"]))
 	if pid <= 0:
-		return "에디터를 실행하지 못했어요."
+		return L.t("에디터를 실행하지 못했어요.")
 	return ""
 
 
@@ -174,7 +174,7 @@ static func start_dump(inst: Dictionary) -> Dictionary:
 	var args := PackedStringArray(["--headless", "--editor", "--path", r.dir, "--", "--hub-dump=" + ProjectSettings.globalize_path(out)])
 	var pid := OS.create_process(r.exe, args)
 	if pid <= 0:
-		return {"pid": 0, "error": "에디터를 실행하지 못했어요."}
+		return {"pid": 0, "error": L.t("에디터를 실행하지 못했어요.")}
 	return {"pid": pid, "error": ""}
 
 
@@ -182,10 +182,10 @@ static func start_dump(inst: Dictionary) -> Dictionary:
 static func _prepare(inst: Dictionary) -> Dictionary:
 	var exe := str(inst.get("exe", ""))
 	if not FileAccess.file_exists(exe):
-		return {"error": "에디터 실행 파일을 찾을 수 없어요:\n" + exe}
+		return {"error": L.t("에디터 실행 파일을 찾을 수 없어요:\n") + exe}
 	var v := GodotVersion.parse(inst.get("version", ""))
 	if v.valid and v.major < 4:
-		return {"error": "Godot 3 이하 버전은 지원하지 않아요."}
+		return {"error": L.t("Godot 3 이하 버전은 지원하지 않아요.")}
 	var ver := ("%d.%d" % [v.major, v.minor]) if v.valid else "4.x"
 	var dir := Hub.data_dir.path_join("settings_helper").path_join(ver + ("-mono" if inst.get("mono", false) else ""))
 	var addon := dir.path_join("addons/godot_hub_settings")
@@ -197,7 +197,7 @@ static func _prepare(inst: Dictionary) -> Dictionary:
 		and _write(addon.path_join("plugin.cfg"), PLUGIN_CFG) \
 		and _write(addon.path_join("plugin.gd"), PLUGIN_SOURCE)
 	if not ok:
-		return {"error": "도우미 프로젝트를 만들 수 없어요:\n" + dir}
+		return {"error": L.t("도우미 프로젝트를 만들 수 없어요:\n") + dir}
 	return {"exe": exe, "dir": ProjectSettings.globalize_path(dir), "error": ""}
 
 

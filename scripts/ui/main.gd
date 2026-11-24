@@ -25,6 +25,12 @@ func _ready() -> void:
 	apply_ui_scale(true)
 	get_tree().auto_accept_quit = false
 	get_window().files_dropped.connect(_on_files_dropped)
+	# 설정 · 새 프로젝트 같은 창은 허브 안이 아니라 따로 뜨는 창(OS 창)이다.
+	# 따로 뜬 창도 허브와 같은 화면 배율을 쓰도록 맞춘다.
+	get_window().gui_embed_subwindows = false
+	get_tree().node_added.connect(func(n: Node) -> void:
+		if n is Window and n != get_window():
+			(n as Window).content_scale_factor = get_window().content_scale_factor)
 	Hub.toast.connect(show_toast)
 	Hub.settings_changed.connect(apply_ui_scale.bind(false))
 	_build()
@@ -179,7 +185,7 @@ func _build_top_bar() -> Control:
 	right.alignment = BoxContainer.ALIGNMENT_END
 	hb.add_child(right)
 	var gear := Button.new()
-	gear.text = "설정"
+	gear.text = L.t("설정")
 	gear.icon = HubIcons.icon("gear")
 	gear.theme_type_variation = "FlatButton"
 	gear.focus_mode = Control.FOCUS_NONE
@@ -238,7 +244,7 @@ func _on_files_dropped(files: PackedStringArray) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		if Downloads.is_active():
-			HubUI.confirm(self, "Godot Hub 종료", "다운로드가 진행 중이에요.\n지금 종료하면 다운로드가 취소돼요.", "종료", get_tree().quit)
+			HubUI.confirm(self, L.t("Godot Hub 종료"), L.t("다운로드가 진행 중이에요.\n지금 종료하면 다운로드가 취소돼요."), L.t("종료"), get_tree().quit)
 		else:
 			get_tree().quit()
 	elif what == NOTIFICATION_APPLICATION_FOCUS_IN and is_node_ready():

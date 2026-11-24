@@ -7,7 +7,7 @@ signal settings_changed
 signal running_changed
 signal toast(message: String)
 
-const HUB_VERSION := "0.1.3"
+const HUB_VERSION := "0.2.0"
 const SCAN_MAX_DEPTH := 5
 const SCAN_SKIP := ["node_modules", "$RECYCLE.BIN", "System Volume Information", "Windows",
 	"Program Files", "Program Files (x86)", "AppData", "Library", "build", "addons"]
@@ -36,6 +36,7 @@ func _enter_tree() -> void:
 	var s: Variant = _read_json("settings.json")
 	if s is Dictionary:
 		settings.merge(s, true)
+	L.apply(str(settings.get("language", "")))
 	var i: Variant = _read_json("installs.json")
 	if i is Array:
 		installs = i
@@ -74,7 +75,8 @@ func default_settings() -> Dictionary:
 		"sort": 0,
 		"default_editor": "",
 		"ui_scale": 0.0,  # 0 = 자동
-		"editor_settings_mode": 0,  # 0: 허브 안 설정 창, 1: 고도 에디터의 설정 창
+		"editor_settings_mode": 0,
+		"language": "",  # "" = 시스템 언어  # 0: 허브 안 설정 창, 1: 고도 에디터의 설정 창
 	}
 
 
@@ -117,7 +119,7 @@ func find_install_by_version(tag: String, mono: bool) -> Dictionary:
 func install_label(inst: Dictionary) -> String:
 	var s: String = inst.get("version", "?")
 	if s == "":
-		s = "알 수 없는 버전"
+		s = L.t("알 수 없는 버전")
 	if inst.get("mono", false):
 		s += " .NET"
 	return s
@@ -173,7 +175,7 @@ func remove_install(id: String, delete_files: bool) -> String:
 		if DirAccess.dir_exists_absolute(dir):
 			var err := OS.move_to_trash(ProjectSettings.globalize_path(dir))
 			if err != OK:
-				return "설치 폴더를 휴지통으로 옮기지 못했어요 (%s).\n에디터가 실행 중이면 닫고 다시 시도해 주세요." % error_string(err)
+				return L.t("설치 폴더를 휴지통으로 옮기지 못했어요 (%s).\n에디터가 실행 중이면 닫고 다시 시도해 주세요.") % error_string(err)
 	installs.erase(inst)
 	if settings.get("default_editor", "") == id:
 		settings.default_editor = ""
@@ -212,6 +214,38 @@ func editor_settings_dir(inst: Dictionary) -> String:
 
 
 ## 그 버전의 에디터 설정 파일. 아직 에디터를 한 번도 안 열었으면 ""
+## ── 내보내기 템플릿 ──
+## 고도는 <설정 폴더>/export_templates/<버전>.<상태>[.mono]/ 에서 템플릿을 찾는다
+## (예: 4.7.stable, 4.5.beta3.mono). 설정 폴더는 독립 모드면 exe 옆 editor_data.
+
+func templates_dir(inst: Dictionary) -> String:
+	var name := str(inst.get("version", "")).replace("-", ".")
+	if bool(inst.get("mono", false)):
+		name += ".mono"
+	return editor_settings_dir(inst).path_join("export_templates").path_join(name)
+
+
+func has_templates(inst: Dictionary) -> bool:
+	return str(inst.get("version", "")) != "" and FileAccess.file_exists(templates_dir(inst).path_join("version.txt"))
+
+
+## 공식 빌드 저장소의 템플릿 파일 주소 (버전 이름 규칙으로 만든다)
+func templates_url(inst: Dictionary) -> String:
+	var tag := str(inst.get("version", ""))
+	var file := "Godot_v%s_%sexport_templates.tpz" % [tag, "mono_" if bool(inst.get("mono", false)) else ""]
+	return "https://github.com/godotengine/godot-builds/releases/download/%s/%s" % [tag, file]
+
+
+## 템플릿 폴더를 휴지통으로. 실패하면 오류 메시지
+func remove_templates(inst: Dictionary) -> String:
+	var dir := templates_dir(inst)
+	if not DirAccess.dir_exists_absolute(dir):
+		return ""
+	var err := OS.move_to_trash(ProjectSettings.globalize_path(dir))
+	installs_changed.emit()
+	return "" if err == OK else L.t("템플릿 폴더를 지우지 못했어요 (%s)") % error_string(err)
+
+
 func editor_settings_file(inst: Dictionary) -> String:
 	var dir := editor_settings_dir(inst)
 	var v := GodotVersion.parse(inst.get("version", ""))
@@ -227,7 +261,7 @@ func set_self_contained(inst: Dictionary, enabled: bool) -> void:
 	if enabled:
 		var f := FileAccess.open(d.path_join("._sc_"), FileAccess.WRITE)
 		if f == null:
-			toast.emit("독립 모드 파일을 만들 수 없어요 (권한을 확인해 주세요)")
+			toast.emit(L.t("독립 모드 파일을 만들 수 없어요 (권한을 확인해 주세요)"))
 			return
 		f.close()
 	else:
@@ -301,13 +335,13 @@ func register_exe(path: String) -> String:
 		if FileAccess.file_exists(gui):
 			exe = gui
 	if not FileAccess.file_exists(exe):
-		return "파일을 찾을 수 없어요:\n" + exe
+		return L.t("파일을 찾을 수 없어요:\n") + exe
 	for inst in installs:
 		if same_path(inst.get("exe", ""), exe):
-			return "이미 등록된 에디터예요."
+			return L.t("이미 등록된 에디터예요.")
 	var v := detect_version(exe)
 	add_install({"version": v.version, "mono": v.mono, "path": exe.get_base_dir(), "exe": exe, "managed": false})
-	toast.emit("%s 를 등록했어요" % install_label(v))
+	toast.emit(L.t("%s 를 등록했어요") % install_label(v))
 	return ""
 
 
@@ -380,7 +414,7 @@ func remove_project(path: String) -> void:
 func rename_project(path: String, new_name: String) -> String:
 	var err := ProjectReader.set_application_value(path, "config/name", ProjectReader.quote(new_name))
 	if err != OK:
-		return "이름을 바꾸지 못했어요 (%s)" % error_string(err)
+		return L.t("이름을 바꾸지 못했어요 (%s)") % error_string(err)
 	_info_cache.erase(path)
 	projects_changed.emit()
 	return ""
@@ -399,7 +433,7 @@ func set_project_tags(path: String, tags: Array) -> String:
 		raw = "PackedStringArray(%s)" % ", ".join(clean.map(func(s: String) -> String: return ProjectReader.quote(s)))
 	var err := ProjectReader.set_application_value(path, "config/tags", raw)
 	if err != OK:
-		return "태그를 저장하지 못했어요 (%s)" % error_string(err)
+		return L.t("태그를 저장하지 못했어요 (%s)") % error_string(err)
 	_info_cache.erase(path)
 	projects_changed.emit()
 	return ""
@@ -410,7 +444,7 @@ func erase_project(path: String, delete_files: bool) -> String:
 	if delete_files and DirAccess.dir_exists_absolute(path):
 		var err := OS.move_to_trash(ProjectSettings.globalize_path(path))
 		if err != OK:
-			return "프로젝트 폴더를 휴지통으로 옮기지 못했어요 (%s).\n에디터에서 열려 있으면 닫고 다시 시도해 주세요." % error_string(err)
+			return L.t("프로젝트 폴더를 휴지통으로 옮기지 못했어요 (%s).\n에디터에서 열려 있으면 닫고 다시 시도해 주세요.") % error_string(err)
 	remove_project(path)
 	return ""
 
@@ -440,16 +474,16 @@ func duplicate_project(src: String, dest: String, new_name: String) -> String:
 	src = normalize_path(src)
 	dest = normalize_path(dest)
 	if DirAccess.dir_exists_absolute(dest) and (DirAccess.get_files_at(dest).size() + DirAccess.get_directories_at(dest).size()) > 0:
-		return "같은 이름의 폴더가 이미 있고 비어 있지 않아요:\n" + dest
+		return L.t("같은 이름의 폴더가 이미 있고 비어 있지 않아요:\n") + dest
 	if (dest.to_lower() + "/").begins_with(src.to_lower() + "/"):
-		return "프로젝트 폴더 안으로는 복제할 수 없어요."
+		return L.t("프로젝트 폴더 안으로는 복제할 수 없어요.")
 	if _copy_thread and _copy_thread.is_alive():
-		return "이미 다른 프로젝트를 복제하는 중이에요."
+		return L.t("이미 다른 프로젝트를 복제하는 중이에요.")
 	if _copy_thread and _copy_thread.is_started():
 		_copy_thread.wait_to_finish()
 	_copy_thread = Thread.new()
 	_copy_thread.start(_copy_worker.bind(src, dest, new_name, str(get_project(src).get("editor", ""))))
-	toast.emit("'%s' 복제 중..." % new_name)
+	toast.emit(L.t("'%s' 복제 중...") % new_name)
 	return ""
 
 
@@ -479,7 +513,7 @@ func _copy_done(err: Error, dest: String, new_name: String, editor: String) -> v
 	_copy_thread.wait_to_finish()
 	_copy_thread = null
 	if err != OK:
-		toast.emit("복제하지 못했어요 (%s)" % error_string(err))
+		toast.emit(L.t("복제하지 못했어요 (%s)") % error_string(err))
 		return
 	ProjectReader.set_application_value(dest, "config/name", ProjectReader.quote(new_name))
 	projects.append({
@@ -489,7 +523,7 @@ func _copy_done(err: Error, dest: String, new_name: String, editor: String) -> v
 	_info_cache.erase(dest)
 	_save_projects()
 	projects_changed.emit()
-	toast.emit("'%s'(으)로 복제했어요" % new_name)
+	toast.emit(L.t("'%s'(으)로 복제했어요") % new_name)
 
 
 func set_project_editor(path: String, id: String) -> void:
@@ -551,19 +585,19 @@ func _prefer_stable(arr: Array) -> Dictionary:
 func open_project(path: String, install_id: String, editor := true, extra := PackedStringArray()) -> String:
 	var inst := find_install(install_id)
 	if inst.is_empty():
-		return "이 프로젝트에 지정된 에디터가 없어요.\n설치 페이지에서 에디터를 설치하거나 위치를 지정한 뒤, 목록에서 에디터 버전을 골라 주세요."
+		return L.t("이 프로젝트에 지정된 에디터가 없어요.\n설치 페이지에서 에디터를 설치하거나 위치를 지정한 뒤, 목록에서 에디터 버전을 골라 주세요.")
 	var exe: String = inst.get("exe", "")
 	if not FileAccess.file_exists(exe):
-		return "에디터 실행 파일을 찾을 수 없어요:\n" + exe
+		return L.t("에디터 실행 파일을 찾을 수 없어요:\n") + exe
 	if not DirAccess.dir_exists_absolute(path):
-		return "프로젝트 폴더를 찾을 수 없어요:\n" + path
+		return L.t("프로젝트 폴더를 찾을 수 없어요:\n") + path
 	var args := PackedStringArray(["--path", path])
 	if editor:
 		args.append("--editor")
 	args.append_array(extra)
 	var pid := OS.create_process(exe, args)
 	if pid <= 0:
-		return "에디터를 실행하지 못했어요."
+		return L.t("에디터를 실행하지 못했어요.")
 	if editor:
 		running[normalize_path(path)] = pid
 		running_changed.emit()
@@ -602,24 +636,24 @@ func import_path(path: String) -> void:
 		p = p.get_base_dir()
 	if FileAccess.file_exists(p.path_join("project.godot")):
 		if add_project(p):
-			toast.emit("프로젝트를 추가했어요: " + project_info(p).name)
+			toast.emit(L.t("프로젝트를 추가했어요: ") + project_info(p).name)
 		else:
-			toast.emit("이미 목록에 있는 프로젝트예요")
+			toast.emit(L.t("이미 목록에 있는 프로젝트예요"))
 	elif DirAccess.dir_exists_absolute(p):
 		scan_folder(p)
 	else:
-		toast.emit("고도 프로젝트가 아니에요: " + p.get_file())
+		toast.emit(L.t("고도 프로젝트가 아니에요: ") + p.get_file())
 
 
 func scan_folder(root: String) -> void:
 	if _scan_thread and _scan_thread.is_alive():
-		toast.emit("이미 프로젝트를 찾는 중이에요")
+		toast.emit(L.t("이미 프로젝트를 찾는 중이에요"))
 		return
 	if _scan_thread and _scan_thread.is_started():
 		_scan_thread.wait_to_finish()
 	_scan_thread = Thread.new()
 	_scan_thread.start(_scan_worker.bind(normalize_path(root)))
-	toast.emit("프로젝트를 찾는 중...")
+	toast.emit(L.t("프로젝트를 찾는 중..."))
 
 
 func _scan_worker(root: String) -> void:
@@ -650,11 +684,11 @@ func _scan_done(found: Array) -> void:
 	_save_projects()
 	projects_changed.emit()
 	if added > 0:
-		toast.emit("프로젝트 %d개를 추가했어요" % added)
+		toast.emit(L.t("프로젝트 %d개를 추가했어요") % added)
 	elif found.is_empty():
-		toast.emit("이 폴더에서 고도 프로젝트를 찾지 못했어요")
+		toast.emit(L.t("이 폴더에서 고도 프로젝트를 찾지 못했어요"))
 	else:
-		toast.emit("찾은 프로젝트가 모두 이미 목록에 있어요")
+		toast.emit(L.t("찾은 프로젝트가 모두 이미 목록에 있어요"))
 
 
 ## 새 프로젝트 만들기. 성공하면 "" 를 돌려준다.
@@ -662,10 +696,10 @@ func create_project(project_name: String, dir: String, install_id: String, featu
 	dir = normalize_path(dir)
 	var inst := find_install(install_id)
 	if inst.is_empty():
-		return "에디터를 골라 주세요."
+		return L.t("에디터를 골라 주세요.")
 	var err := DirAccess.make_dir_recursive_absolute(dir)
 	if err != OK:
-		return "폴더를 만들 수 없어요 (%s)" % error_string(err)
+		return L.t("폴더를 만들 수 없어요 (%s)") % error_string(err)
 	var ver := GodotVersion.parse(inst.get("version", ""))
 	var text := NEW_PROJECT_HEADER
 	if ver.major >= 4 or not ver.valid:
@@ -682,7 +716,7 @@ func create_project(project_name: String, dir: String, install_id: String, featu
 		if feature == "GL Compatibility":
 			text += "\n[rendering]\n\nquality/driver/driver_name=\"GLES2\"\n"
 	if not _write_text(dir.path_join("project.godot"), text):
-		return "project.godot 파일을 쓸 수 없어요."
+		return L.t("project.godot 파일을 쓸 수 없어요.")
 	var icon := FileAccess.get_file_as_string("res://icon.svg")
 	_write_text(dir.path_join("icon.svg"), icon)
 	if ver.major >= 4:
@@ -692,7 +726,7 @@ func create_project(project_name: String, dir: String, install_id: String, featu
 		_write_text(dir.path_join(".gitattributes"), "# Normalize EOL for all files that Git considers text files.\n* text=auto eol=lf\n")
 		var out: Array = []
 		if OS.execute("git", PackedStringArray(["init", ProjectSettings.globalize_path(dir)]), out, true) != 0:
-			toast.emit("Git을 찾지 못해 git init은 건너뛰었어요")
+			toast.emit(L.t("Git을 찾지 못해 git init은 건너뛰었어요"))
 	projects.append({
 		"path": dir, "editor": install_id, "favorite": false,
 		"last_opened": 0, "added": int(Time.get_unix_time_from_system()),

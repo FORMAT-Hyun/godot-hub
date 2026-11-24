@@ -67,22 +67,22 @@ func _request_page() -> void:
 		headers.append("Authorization: Bearer " + token)
 	var err := _http.request(API_URL % _page, headers)
 	if err != OK:
-		_fail("요청을 보내지 못했어요 (%s)" % error_string(err))
+		_fail(L.t("요청을 보내지 못했어요 (%s)") % error_string(err))
 
 
 func _on_page_completed(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS:
-		_fail("인터넷 연결을 확인해 주세요 (오류 %d)" % result)
+		_fail(L.t("인터넷 연결을 확인해 주세요 (오류 %d)") % result)
 		return
 	if code == 403 or code == 429:
-		_fail("GitHub 요청 한도를 넘었어요. 잠시 후 다시 시도하거나 설정에서 GitHub 토큰을 넣어 주세요.")
+		_fail(L.t("GitHub 요청 한도를 넘었어요. 잠시 후 다시 시도하거나 설정에서 GitHub 토큰을 넣어 주세요."))
 		return
 	if code != 200:
-		_fail("GitHub 응답 오류 (HTTP %d)" % code)
+		_fail(L.t("GitHub 응답 오류 (HTTP %d)") % code)
 		return
 	var data: Variant = JSON.parse_string(body.get_string_from_utf8())
 	if not data is Array:
-		_fail("릴리스 목록을 읽지 못했어요")
+		_fail(L.t("릴리스 목록을 읽지 못했어요"))
 		return
 	for r in data:
 		var rec := _convert(r)

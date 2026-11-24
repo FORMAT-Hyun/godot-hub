@@ -19,7 +19,7 @@ func _rebuild() -> void:
 	visible = not Downloads.jobs.is_empty()
 	if not visible:
 		return
-	add_child(HubUI.label("다운로드", "SectionLabel"))
+	add_child(HubUI.label(L.t("다운로드"), "SectionLabel"))
 	for job in Downloads.jobs:
 		var panel := PanelContainer.new()
 		panel.theme_type_variation = "RowPanel"
@@ -34,7 +34,7 @@ func _rebuild() -> void:
 		title.add_theme_font_size_override("font_size", 13)
 		top.add_child(title)
 		var active: bool = Downloads.ACTIVE_STATES.has(job.state)
-		var x := HubUI.flat_icon_button("close", "취소" if active else "닫기")
+		var x := HubUI.flat_icon_button("close", L.t("취소") if active else L.t("닫기"))
 		x.disabled = job.state == "extracting"
 		var id: int = job.id
 		x.pressed.connect(func() -> void:
@@ -66,16 +66,16 @@ func _on_job_updated(job: Dictionary) -> void:
 	status.remove_theme_color_override("font_color")
 	match str(job.state):
 		"queued":
-			status.text = "대기 중"
+			status.text = L.t("대기 중")
 		"downloading":
 			status.text = "%d%%  ·  %s / %s" % [int(job.progress * 100), HubUI.human_size(job.downloaded), HubUI.human_size(job.size)]
 		"extracting":
-			status.text = "압축 푸는 중 %d%%" % int(job.progress * 100)
+			status.text = L.t("압축 푸는 중 %d%%") % int(job.progress * 100)
 		"done":
-			status.text = "설치 완료"
+			status.text = L.t("설치 완료")
 			status.add_theme_color_override("font_color", HubTheme.SUCCESS)
 		"canceled":
-			status.text = "취소됨"
+			status.text = L.t("취소됨")
 		"error":
 			status.text = str(job.message)
 			status.add_theme_color_override("font_color", HubTheme.ERROR)

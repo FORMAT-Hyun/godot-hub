@@ -68,7 +68,7 @@ static func confirm(parent: Node, title: String, text: String, ok_text: String, 
 	d.dialog_text = text
 	d.dialog_autowrap = true
 	d.ok_button_text = ok_text
-	d.cancel_button_text = "취소"
+	d.cancel_button_text = L.t("취소")
 	d.confirmed.connect(on_ok)
 	d.visibility_changed.connect(func() -> void:
 		if not d.visible:
@@ -82,7 +82,7 @@ static func prompt(parent: Node, title: String, message: String, initial: String
 	var d := ConfirmationDialog.new()
 	d.title = title
 	d.ok_button_text = ok_text
-	d.cancel_button_text = "취소"
+	d.cancel_button_text = L.t("취소")
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 8)
 	d.add_child(vb)
@@ -110,7 +110,7 @@ static func alert(parent: Node, title: String, text: String) -> void:
 	d.title = title
 	d.dialog_text = text
 	d.dialog_autowrap = true
-	d.ok_button_text = "확인"
+	d.ok_button_text = L.t("확인")
 	d.visibility_changed.connect(func() -> void:
 		if not d.visible:
 			d.queue_free())
@@ -134,15 +134,15 @@ static func rel_time(unix: int) -> String:
 		return "-"
 	var diff := int(Time.get_unix_time_from_system()) - unix
 	if diff < 60:
-		return "방금 전"
+		return L.t("방금 전")
 	if diff < 3600:
-		return "%d분 전" % floori(diff / 60.0)
+		return L.t("%d분 전") % floori(diff / 60.0)
 	if diff < 86400:
-		return "%d시간 전" % floori(diff / 3600.0)
+		return L.t("%d시간 전") % floori(diff / 3600.0)
 	if diff < 172800:
-		return "어제"
+		return L.t("어제")
 	if diff < 86400 * 30:
-		return "%d일 전" % floori(diff / 86400.0)
+		return L.t("%d일 전") % floori(diff / 86400.0)
 	var bias := int(Time.get_time_zone_from_system().get("bias", 0)) * 60
 	var d := Time.get_datetime_dict_from_unix_time(unix + bias)
 	return "%04d. %02d. %02d." % [d.year, d.month, d.day]
