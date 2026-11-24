@@ -348,6 +348,9 @@
 "Novo projeto de jogo",
 "A pasta selecionada não está vazia.",
 "A pasta do projeto será criada automaticamente.",
-"O projeto será criado na pasta selecionada."
+"O projeto será criado na pasta selecionada.",
+"• Qualidade visual superior\n• Todas as funcionalidades disponíveis\n• Incompatível com hardware antigo\n• Não recomendado para jogos web",
+"• Qualidade visual inferior\n• Algumas funcionalidades indisponíveis\n• Funciona na maioria do hardware\n• Recomendado para jogos web",
+"Não é possível criar projetos novos com o Godot 2 ou anterior. Escolha o Godot 3 ou mais recente."
 ]
 }

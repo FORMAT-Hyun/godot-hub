@@ -348,6 +348,9 @@
 "Nuevo proyecto de juego",
 "La carpeta seleccionada no está vacía.",
 "La carpeta del proyecto se va a crear automáticamente.",
-"El proyecto se va a crear en la carpeta seleccionada."
+"El proyecto se va a crear en la carpeta seleccionada.",
+"• Mayor calidad visual\n• Todas las funciones disponibles\n• Incompatible con hardware antiguo\n• No recomendado para juegos web",
+"• Menor calidad visual\n• Algunas funciones no disponibles\n• Funciona en la mayoría del hardware\n• Recomendado para juegos web",
+"No se pueden crear proyectos nuevos con Godot 2 o anterior. Elegí Godot 3 o posterior."
 ]
 }

@@ -348,6 +348,9 @@
 "Nowy projekt gry",
 "Wybrany folder nie jest pusty.",
 "Folder projektu zostanie utworzony automatycznie.",
-"Projekt zostanie utworzony w wybranym folderze."
+"Projekt zostanie utworzony w wybranym folderze.",
+"• Wyższa jakość obrazu\n• Wszystkie funkcje dostępne\n• Niezgodny ze starszym sprzętem\n• Niezalecany do gier webowych",
+"• Niższa jakość obrazu\n• Niektóre funkcje niedostępne\n• Działa na większości sprzętu\n• Zalecany do gier webowych",
+"Nie można tworzyć nowych projektów w Godot 2 lub starszym. Wybierz Godot 3 lub nowszy."
 ]
 }

@@ -348,6 +348,9 @@
 "Nova luda projekto",
 "La elektita dosierujo ne estas malplena.",
 "La projekta dosierujo kreiĝos aŭtomate.",
-"La projekto kreiĝos en la elektita dosierujo."
+"La projekto kreiĝos en la elektita dosierujo.",
+"• Pli alta bilda kvalito\n• Ĉiuj funkcioj disponeblas\n• Nekongrua kun malnova aparataro\n• Ne rekomendata por retaj ludoj",
+"• Pli malalta bilda kvalito\n• Kelkaj funkcioj ne disponeblas\n• Funkcias sur plejparto de aparataro\n• Rekomendata por retaj ludoj",
+"Ne eblas krei novajn projektojn per Godot 2 aŭ pli malnova. Bonvolu elekti Godot 3 aŭ pli novan."
 ]
 }

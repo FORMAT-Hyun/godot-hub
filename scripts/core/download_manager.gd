@@ -51,8 +51,7 @@ func install_templates(inst: Dictionary) -> void:
 	if is_busy_with(tag, mono, "templates"):
 		return
 	var url := Hub.templates_url(inst)
-	_enqueue("templates", tag, mono, {"url": url, "name": url.get_file(), "size": 0})
-	jobs[-1]["dest"] = Hub.templates_dir(inst)
+	_enqueue("templates", tag, mono, {"url": url, "name": url.get_file(), "size": 0, "dest": Hub.templates_dir(inst)})
 
 
 ## 에셋 라이브러리의 프로젝트(템플릿 · 데모)를 받아 dest 폴더에 새 프로젝트로 풀고 목록에 추가한다
@@ -64,9 +63,8 @@ func install_asset(asset: Dictionary, dest: String) -> void:
 	var tag := "asset-" + str(asset.get("asset_id", ""))
 	if is_busy_with(tag, false, "asset"):
 		return
-	_enqueue("asset", tag, false, {"url": url, "name": tag + ".zip", "size": 0})
-	jobs[-1]["dest"] = Hub.normalize_path(dest)
-	jobs[-1]["title"] = str(asset.get("title", tag))
+	_enqueue("asset", tag, false, {"url": url, "name": tag + ".zip", "size": 0,
+		"title": str(asset.get("title", tag)), "dest": Hub.normalize_path(dest)})
 
 
 func install_editor(release: Dictionary, mono: bool) -> void:
@@ -117,7 +115,11 @@ func _enqueue(kind: String, tag: String, mono: bool, asset: Dictionary) -> void:
 		"url": asset.get("url", ""), "size": int(asset.get("size", 0)), "file": asset.get("name", ""),
 		"state": "queued", "progress": 0.0, "downloaded": 0, "message": "",
 	}
-	job["title"] = "Godot %s%s%s" % [tag, " .NET" if mono else "", L.t(" 템플릿") if kind == "templates" else ""]
+	job["title"] = str(asset.get("title", "Godot %s%s%s" % [tag, " .NET" if mono else "", L.t(" 템플릿") if kind == "templates" else ""]))
+	if asset.has("dest"):
+		job["dest"] = asset.dest
+		# 실패했을 때 지워도 되는지: 받기 전에 비어 있던(없던) 폴더만 지운다
+		job["dest_was_empty"] = _is_empty_dir(asset.dest)
 	_next_id += 1
 	jobs.append(job)
 	jobs_changed.emit()
@@ -144,6 +146,8 @@ func _start_next() -> void:
 	add_child(_http)
 	var err := _http.request(_current.url, PackedStringArray(["User-Agent: GodotHub-Launcher"]))
 	if err != OK:
+		_http.queue_free()
+		_http = null
 		_fail(_current, L.t("다운로드를 시작하지 못했어요 (%s)") % error_string(err))
 		return
 	_current.state = "downloading"
@@ -165,7 +169,7 @@ func _process(delta: float) -> void:
 	var got := _http.get_downloaded_bytes()
 	_current.downloaded = got
 	_current.size = total
-	_current.progress = clampf(float(got) / maxi(1, total), 0.0, 1.0)
+	_current.progress = clampf(float(got) / total, 0.0, 1.0) if total > 0 else -1.0
 	job_updated.emit(_current)
 
 
@@ -195,6 +199,7 @@ func _on_downloaded(result: int, code: int, _headers: PackedStringArray, _body: 
 		_thread.start(_extract_asset.bind(job.tmp, job.dest))
 		return
 	job["dest"] = Hub.editor_install_dir(job.tag, job.mono)
+	job["dest_was_empty"] = _is_empty_dir(job.dest)
 	_thread.start(_extract_editor.bind(job.tmp, job.dest))
 
 
@@ -255,8 +260,7 @@ func _extract_asset(zip_path: String, dest: String) -> Dictionary:
 		var f := FileAccess.open(out, FileAccess.WRITE)
 		if f == null:
 			zr.close()
-			return _done({"ok": false, "msg": L.t("파일을 쓸 수 없어요:
-") + out})
+			return _done({"ok": false, "msg": L.t("파일을 쓸 수 없어요:\n") + out})
 		f.store_buffer(zr.read_file(name))
 		f.close()
 		if i % 10 == 0:
@@ -282,8 +286,7 @@ func _extract_templates(tpz_path: String, dest: String) -> Dictionary:
 		var f := FileAccess.open(out, FileAccess.WRITE)
 		if f == null:
 			zr.close()
-			return _done({"ok": false, "msg": "파일을 쓸 수 없어요:
-" + out})
+			return _done({"ok": false, "msg": L.t("파일을 쓸 수 없어요:\n") + out})
 		f.store_buffer(zr.read_file(name))
 		f.close()
 		call_deferred("_on_extract_progress", float(i + 1) / files.size())
@@ -315,6 +318,8 @@ func _on_extract_done(res: Dictionary) -> void:
 		return
 	DirAccess.remove_absolute(job.tmp)
 	if not res.get("ok", false):
+		if job.get("dest_was_empty", false) and str(job.get("dest", "")) != "":
+			_remove_dir(str(job.dest))
 		_fail(job, str(res.get("msg", L.t("설치 실패"))))
 		return
 	if job.kind == "asset":
@@ -348,6 +353,23 @@ func _on_extract_done(res: Dictionary) -> void:
 	_finish_current()
 	var id: int = job.id
 	get_tree().create_timer(8.0).timeout.connect(dismiss.bind(id))
+
+
+static func _is_empty_dir(dir: String) -> bool:
+	if not DirAccess.dir_exists_absolute(dir):
+		return true
+	return DirAccess.get_files_at(dir).is_empty() and DirAccess.get_directories_at(dir).is_empty()
+
+
+## 반쯤 풀린 폴더 지우기 (실패했을 때만)
+static func _remove_dir(dir: String) -> void:
+	if not DirAccess.dir_exists_absolute(dir):
+		return
+	for f in DirAccess.get_files_at(dir):
+		DirAccess.remove_absolute(dir.path_join(f))
+	for d in DirAccess.get_directories_at(dir):
+		_remove_dir(dir.path_join(d))
+	DirAccess.remove_absolute(dir)
 
 
 func _fail(job: Dictionary, message: String) -> void:

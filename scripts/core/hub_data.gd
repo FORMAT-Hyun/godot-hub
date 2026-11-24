@@ -7,7 +7,7 @@ signal settings_changed
 signal running_changed
 signal toast(message: String)
 
-const HUB_VERSION := "0.2.2"
+const HUB_VERSION := "0.2.3"
 const SCAN_MAX_DEPTH := 5
 const SCAN_SKIP := ["node_modules", "$RECYCLE.BIN", "System Volume Information", "Windows",
 	"Program Files", "Program Files (x86)", "AppData", "Library", "build", "addons"]
@@ -75,8 +75,8 @@ func default_settings() -> Dictionary:
 		"sort": 0,
 		"default_editor": "",
 		"ui_scale": 0.0,  # 0 = 자동
-		"editor_settings_mode": 0,
-		"language": "",  # "" = 시스템 언어  # 0: 허브 안 설정 창, 1: 고도 에디터의 설정 창
+		"editor_settings_mode": 0,  # 0: 허브 안 설정 창, 1: 고도 에디터의 설정 창
+		"language": "",  # "" = 시스템 언어
 	}
 
 
@@ -213,7 +213,6 @@ func editor_settings_dir(inst: Dictionary) -> String:
 	return normalize_path(OS.get_config_dir().path_join("Godot"))
 
 
-## 그 버전의 에디터 설정 파일. 아직 에디터를 한 번도 안 열었으면 ""
 ## ── 내보내기 템플릿 ──
 ## 고도는 <설정 폴더>/export_templates/<버전>.<상태>[.mono]/ 에서 템플릿을 찾는다
 ## (예: 4.7.stable, 4.5.beta3.mono). 설정 폴더는 독립 모드면 exe 옆 editor_data.
@@ -250,6 +249,7 @@ func remove_templates(inst: Dictionary) -> String:
 	return "" if err == OK else L.t("템플릿 폴더를 지우지 못했어요 (%s)") % error_string(err)
 
 
+## 그 버전의 에디터 설정 파일. 아직 에디터를 한 번도 안 열었으면 ""
 func editor_settings_file(inst: Dictionary) -> String:
 	var dir := editor_settings_dir(inst)
 	var v := GodotVersion.parse(inst.get("version", ""))
@@ -614,7 +614,11 @@ func open_project(path: String, install_id: String, editor := true, extra := Pac
 		1:
 			get_window().mode = Window.MODE_MINIMIZED
 		2:
-			get_tree().quit()
+			# 다운로드 중에 끄면 받던 것이 사라지므로, 그때는 최소화만 한다
+			if Downloads.is_active():
+				get_window().mode = Window.MODE_MINIMIZED
+			else:
+				get_tree().quit()
 	return ""
 
 
@@ -708,7 +712,10 @@ func create_project(project_name: String, dir: String, install_id: String, featu
 	var text := NEW_PROJECT_HEADER
 	if ver.major >= 4 or not ver.valid:
 		text += "config_version=5\n\n[application]\n\nconfig/name=%s\n" % JSON.stringify(project_name)
-		text += "config/features=PackedStringArray(\"%d.%d\", \"%s\")\n" % [ver.major, ver.minor, feature]
+		if ver.valid:
+			text += "config/features=PackedStringArray(\"%d.%d\", \"%s\")\n" % [ver.major, ver.minor, feature]
+		else:
+			text += "config/features=PackedStringArray(\"%s\")\n" % feature
 		text += "config/icon=\"res://icon.svg\"\n"
 		match feature:
 			"Mobile":
@@ -717,8 +724,8 @@ func create_project(project_name: String, dir: String, install_id: String, featu
 				text += "\n[rendering]\n\nrenderer/rendering_method=\"gl_compatibility\"\nrenderer/rendering_method.mobile=\"gl_compatibility\"\n"
 	else:
 		text += "config_version=4\n\n[application]\n\nconfig/name=%s\nconfig/icon=\"res://icon.svg\"\n" % JSON.stringify(project_name)
-		if feature == "GL Compatibility":
-			text += "\n[rendering]\n\nquality/driver/driver_name=\"GLES2\"\n"
+		if feature == "GLES2" or feature == "GL Compatibility":
+			text += "\n[rendering]\n\nquality/driver/driver_name=\"GLES2\"\nvram_compression/import_etc=true\nvram_compression/import_etc2=false\n"
 	if not _write_text(dir.path_join("project.godot"), text):
 		return L.t("project.godot 파일을 쓸 수 없어요.")
 	var icon := FileAccess.get_file_as_string("res://icon.svg")
@@ -726,15 +733,22 @@ func create_project(project_name: String, dir: String, install_id: String, featu
 	if ver.major >= 4:
 		_write_text(dir.path_join(".editorconfig"), "root = true\n\n[*]\ncharset = utf-8\n")
 	if use_git:
-		_write_text(dir.path_join(".gitignore"), "# Godot 4+ specific ignores\n.godot/\n/android/\n")
+		if ver.major >= 4 or not ver.valid:
+			_write_text(dir.path_join(".gitignore"), "# Godot 4+ specific ignores\n.godot/\n/android/\n")
+		else:
+			_write_text(dir.path_join(".gitignore"), "# Godot-specific ignores\n.import/\nexport.cfg\nexport_presets.cfg\n\n# Imported translations (automatically generated from CSV files)\n*.translation\n\n# Mono-specific ignores\n.mono/\ndata_*/\nmono_crash.*.json\n")
 		_write_text(dir.path_join(".gitattributes"), "# Normalize EOL for all files that Git considers text files.\n* text=auto eol=lf\n")
 		var out: Array = []
 		if OS.execute("git", PackedStringArray(["init", ProjectSettings.globalize_path(dir)]), out, true) != 0:
 			toast.emit(L.t("Git을 찾지 못해 git init은 건너뛰었어요"))
-	projects.append({
-		"path": dir, "editor": install_id, "favorite": false,
-		"last_opened": 0, "added": int(Time.get_unix_time_from_system()),
-	})
+	var existing := find_project(dir)
+	if existing >= 0:
+		projects[existing]["editor"] = install_id
+	else:
+		projects.append({
+			"path": dir, "editor": install_id, "favorite": false,
+			"last_opened": 0, "added": int(Time.get_unix_time_from_system()),
+		})
 	_info_cache.erase(dir)
 	_save_projects()
 	projects_changed.emit()

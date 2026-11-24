@@ -348,6 +348,9 @@
 "Nový herný projekt",
 "Vybraný priečinok nie je prázdny.",
 "Priečinok projektu sa vytvorí automaticky.",
-"Projekt sa vytvorí vo vybranom priečinku."
+"Projekt sa vytvorí vo vybranom priečinku.",
+"• Vyššia vizuálna kvalita\n• Dostupné všetky funkcie\n• Nekompatibilné so starším hardvérom\n• Neodporúča sa pre webové hry",
+"• Nižšia vizuálna kvalita\n• Niektoré funkcie nie sú k dispozícii\n• Funguje na väčšine hardvéru\n• Odporúča sa pre webové hry",
+"S Godot 2 alebo starším nemožno vytvárať nové projekty. Vyberte Godot 3 alebo novší."
 ]
 }

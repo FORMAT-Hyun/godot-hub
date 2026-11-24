@@ -348,6 +348,9 @@
 "Projecte de joc nou",
 "La carpeta seleccionada no és buida.",
 "La carpeta del projecte es crearà automàticament.",
-"El projecte es crearà a la carpeta seleccionada."
+"El projecte es crearà a la carpeta seleccionada.",
+"• Més qualitat visual\n• Totes les funcions disponibles\n• Incompatible amb maquinari antic\n• No recomanat per a jocs web",
+"• Menys qualitat visual\n• Algunes funcions no disponibles\n• Funciona a la majoria de maquinari\n• Recomanat per a jocs web",
+"No es poden crear projectes nous amb Godot 2 o anterior. Tria Godot 3 o posterior."
 ]
 }

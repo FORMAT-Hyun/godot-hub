@@ -348,6 +348,9 @@
 "Nieuw gameproject",
 "De geselecteerde map is niet leeg.",
 "De projectmap wordt automatisch gemaakt.",
-"Het project wordt in de geselecteerde map gemaakt."
+"Het project wordt in de geselecteerde map gemaakt.",
+"• Hogere beeldkwaliteit\n• Alle functies beschikbaar\n• Niet compatibel met oudere hardware\n• Niet aanbevolen voor webgames",
+"• Lagere beeldkwaliteit\n• Sommige functies niet beschikbaar\n• Werkt op de meeste hardware\n• Aanbevolen voor webgames",
+"Met Godot 2 of ouder kunnen geen nieuwe projecten worden gemaakt. Kies Godot 3 of nieuwer."
 ]
 }

@@ -348,6 +348,9 @@
 "Proyek Game Baru",
 "Folder yang dipilih tidak kosong.",
 "Folder proyek akan dibuat otomatis.",
-"Proyek akan dibuat di folder yang dipilih."
+"Proyek akan dibuat di folder yang dipilih.",
+"• Kualitas visual lebih tinggi\n• Semua fitur tersedia\n• Tidak kompatibel dengan perangkat keras lama\n• Tidak disarankan untuk game web",
+"• Kualitas visual lebih rendah\n• Beberapa fitur tidak tersedia\n• Berjalan di sebagian besar perangkat keras\n• Disarankan untuk game web",
+"Proyek baru tidak bisa dibuat dengan Godot 2 atau lebih lama. Silakan pilih Godot 3 atau lebih baru."
 ]
 }

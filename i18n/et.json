@@ -348,6 +348,9 @@
 "Uus mänguprojekt",
 "Valitud kaust pole tühi.",
 "Projekti kaust luuakse automaatselt.",
-"Projekt luuakse valitud kausta."
+"Projekt luuakse valitud kausta.",
+"• Parem pildikvaliteet\n• Kõik funktsioonid saadaval\n• Ei ühildu vanema riistvaraga\n• Ei soovitata veebimängudele",
+"• Madalam pildikvaliteet\n• Mõned funktsioonid pole saadaval\n• Töötab enamikul riistvaral\n• Soovitatav veebimängudele",
+"Godot 2 või vanemaga ei saa uusi projekte luua. Vali Godot 3 või uuem."
 ]
 }

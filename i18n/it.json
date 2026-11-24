@@ -348,6 +348,9 @@
 "Nuovo progetto di gioco",
 "La cartella selezionata non è vuota.",
 "La cartella del progetto verrà creata automaticamente.",
-"Il progetto verrà creato nella cartella selezionata."
+"Il progetto verrà creato nella cartella selezionata.",
+"• Qualità visiva più alta\n• Tutte le funzionalità disponibili\n• Incompatibile con hardware vecchio\n• Sconsigliato per i giochi web",
+"• Qualità visiva più bassa\n• Alcune funzionalità non disponibili\n• Funziona sulla maggior parte dell'hardware\n• Consigliato per i giochi web",
+"Non è possibile creare nuovi progetti con Godot 2 o precedenti. Scegli Godot 3 o successivo."
 ]
 }

@@ -6,8 +6,9 @@ extends ConfirmationDialog
 
 signal project_created(path: String, install_id: String)
 
-# 고도 4.x 렌더러 (feature = project.godot의 config/features 값)
-var renderers := [
+# 렌더러 목록은 고른 에디터의 주 버전에 따라 바뀐다 (고도 프로젝트 매니저와 같은 이름 · 설명).
+# 고도 4.x (feature = project.godot의 config/features 값)
+var renderers_4 := [
 	{"id": "forward", "name": "Forward+", "feature": "Forward Plus",
 		"desc": L.t("• 데스크톱 플랫폼만 지원해요.\n• 고급 3D 그래픽을 쓸 수 있어요.\n• 크고 복잡한 씬까지 확장할 수 있어요.\n• RenderingDevice 백엔드를 써요.\n• 단순한 씬은 상대적으로 느려요.")},
 	{"id": "mobile", "name": "Mobile", "feature": "Mobile",
@@ -15,6 +16,15 @@ var renderers := [
 	{"id": "compat", "name": "Compatibility", "feature": "GL Compatibility",
 		"desc": L.t("• 데스크톱, 모바일 + 웹 플랫폼을 지원해요.\n• 3D 그래픽이 가장 단순해요.\n• 저사양 · 오래된 기기를 위한 렌더러예요.\n• OpenGL 3 백엔드를 써요 (OpenGL 3.3 / ES 3.0 / WebGL2).\n• 단순한 씬을 가장 빠르게 그려요.")},
 ]
+# 고도 3.x (feature = [rendering] quality/driver/driver_name 값)
+var renderers_3 := [
+	{"id": "gles3", "name": "OpenGL ES 3.0", "feature": "GLES3",
+		"desc": L.t("• 화질이 더 좋아요\n• 모든 기능을 쓸 수 있어요\n• 오래된 하드웨어와는 호환되지 않아요\n• 웹 게임에는 추천하지 않아요")},
+	{"id": "gles2", "name": "OpenGL ES 2.0", "feature": "GLES2",
+		"desc": L.t("• 화질이 더 낮아요\n• 일부 기능을 쓸 수 없어요\n• 대부분의 하드웨어에서 돌아가요\n• 웹 게임에 추천해요")},
+]
+var renderers: Array = renderers_4
+var _major := 4
 
 var _renderer := "forward"
 var _editor_opt: OptionButton
@@ -25,6 +35,8 @@ var _status_icon: TextureRect
 var _status: Label
 var _renderer_buttons := {}
 var _renderer_desc: Label
+var _renderer_title: Label
+var _radios: VBoxContainer
 var _vcs_opt: OptionButton
 var _dir_dialog: FileDialog
 
@@ -46,7 +58,9 @@ func _ready() -> void:
 	vb.add_child(HubUI.label(L.t("에디터 버전:")))
 	_editor_opt = OptionButton.new()
 	_editor_opt.fit_to_longest_item = false
-	_editor_opt.item_selected.connect(func(_i: int) -> void: _validate())
+	_editor_opt.item_selected.connect(func(_i: int) -> void:
+		_update_renderers()
+		_validate())
 	vb.add_child(_editor_opt)
 	vb.add_child(HubUI.vspace(4))
 
@@ -96,25 +110,25 @@ func _ready() -> void:
 	var rend := HBoxContainer.new()
 	rend.add_theme_constant_override("separation", 16)
 	vb.add_child(rend)
-	var radios := VBoxContainer.new()
-	radios.custom_minimum_size.x = 160
-	rend.add_child(radios)
-	var group := ButtonGroup.new()
-	for r in renderers:
-		var cb := CheckBox.new()
-		cb.text = r.name
-		cb.button_group = group
-		cb.button_pressed = r.id == _renderer
-		cb.focus_mode = Control.FOCUS_NONE
-		cb.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-		cb.pressed.connect(func() -> void: _select_renderer(r.id))
-		radios.add_child(cb)
-		_renderer_buttons[r.id] = cb
-	rend.add_child(VSeparator.new())
-	_renderer_desc = HubUI.label("", "", 400)
+	_radios = VBoxContainer.new()
+	_radios.custom_minimum_size.x = 160
+	rend.add_child(_radios)
+	# 오른쪽: 고른 렌더러의 이름(제목)과 설명을 상자 하나에 묶어, 어느 렌더러 설명인지 바로 보이게 한다
+	var desc_box := PanelContainer.new()
+	desc_box.theme_type_variation = "SidePanel"
+	desc_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rend.add_child(desc_box)
+	var desc_vb := VBoxContainer.new()
+	desc_vb.add_theme_constant_override("separation", 8)
+	desc_box.add_child(desc_vb)
+	_renderer_title = HubUI.label("", "TitleLabel")
+	_renderer_title.add_theme_color_override("font_color", HubTheme.ACCENT)
+	_renderer_title.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	desc_vb.add_child(_renderer_title)
+	_renderer_desc = HubUI.label("", "", 380)
 	_renderer_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_renderer_desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	rend.add_child(_renderer_desc)
+	_renderer_desc.add_theme_constant_override("line_spacing", 4)
+	desc_vb.add_child(_renderer_desc)
 	var note := HubUI.label(L.t("렌더러는 나중에 바꿀 수 있지만, 씬을 조정해야 할 수도 있어요."), "DimLabel", 600)
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -140,7 +154,36 @@ func _ready() -> void:
 
 	about_to_popup.connect(_reset)
 	confirmed.connect(_create)
-	_select_renderer(_renderer)
+	_update_renderers()
+
+
+## 고른 에디터가 고도 3이면 OpenGL ES 3.0 / 2.0, 고도 4면 Forward+ / Mobile / Compatibility
+func _update_renderers() -> void:
+	var major := 4
+	if _editor_opt.item_count > 0:
+		var v := GodotVersion.parse(Hub.find_install(str(_editor_opt.get_selected_metadata())).get("version", ""))
+		if v.valid:
+			major = v.major
+	_major = major
+	var list: Array = renderers_3 if major == 3 else renderers_4
+	if list == renderers and _radios.get_child_count() > 0:
+		return
+	renderers = list
+	for c in _radios.get_children():
+		_radios.remove_child(c)
+		c.queue_free()
+	_renderer_buttons.clear()
+	var group := ButtonGroup.new()
+	for r in renderers:
+		var cb := CheckBox.new()
+		cb.text = r.name
+		cb.button_group = group
+		cb.focus_mode = Control.FOCUS_NONE
+		cb.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+		cb.pressed.connect(func() -> void: _select_renderer(r.id))
+		_radios.add_child(cb)
+		_renderer_buttons[r.id] = cb
+	_select_renderer(renderers[0].id)
 
 
 func _select_renderer(id: String) -> void:
@@ -148,6 +191,7 @@ func _select_renderer(id: String) -> void:
 	for r in renderers:
 		_renderer_buttons[r.id].set_pressed_no_signal(r.id == id)
 		if r.id == id:
+			_renderer_title.text = r.name
 			_renderer_desc.text = r.desc
 
 
@@ -159,6 +203,7 @@ func _reset() -> void:
 		_editor_opt.set_item_metadata(_editor_opt.item_count - 1, inst.id)
 		if inst.id == default_id:
 			_editor_opt.select(_editor_opt.item_count - 1)
+	_update_renderers()
 	var parent := str(Hub.settings.get("project_dir", ""))
 	_path_edit.text = parent.replace("/", "\\")
 	_create_folder.button_pressed = true
@@ -191,6 +236,8 @@ func _validate() -> String:
 		(DirAccess.get_files_at(target).size() + DirAccess.get_directories_at(target).size()) > 0
 	if _editor_opt.item_count == 0:
 		err = L.t("설치된 에디터가 없어요. 먼저 설치 페이지에서 에디터를 추가해 주세요.")
+	elif _major < 3:
+		err = L.t("Godot 2 이하 버전으로는 새 프로젝트를 만들 수 없어요. Godot 3 이상을 골라 주세요.")
 	elif name == "":
 		err = L.t("프로젝트 이름을 입력해 주세요.")
 	elif _path_edit.text.strip_edges() == "":

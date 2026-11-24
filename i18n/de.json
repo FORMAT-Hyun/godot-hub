@@ -348,6 +348,9 @@
 "Neues Spielprojekt",
 "Der ausgewählte Ordner ist nicht leer.",
 "Der Projektordner wird automatisch erstellt.",
-"Das Projekt wird im ausgewählten Ordner erstellt."
+"Das Projekt wird im ausgewählten Ordner erstellt.",
+"• Höhere visuelle Qualität\n• Alle Funktionen verfügbar\n• Nicht mit älterer Hardware kompatibel\n• Nicht empfohlen für Webspiele",
+"• Geringere visuelle Qualität\n• Einige Funktionen nicht verfügbar\n• Läuft auf den meisten Geräten\n• Empfohlen für Webspiele",
+"Mit Godot 2 oder älter können keine neuen Projekte erstellt werden. Bitte wähle Godot 3 oder neuer."
 ]
 }

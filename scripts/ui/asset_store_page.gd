@@ -15,6 +15,7 @@ var _version: OptionButton
 var _grid: GridContainer
 var _scroll: ScrollContainer
 var _status: Label
+var _retry: Button
 var _prev: Button
 var _next: Button
 var _page_label: Label
@@ -81,6 +82,18 @@ func _ready() -> void:
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vb.add_child(_status)
+	# 목록을 못 불러왔을 때 다시 시도
+	_retry = Button.new()
+	_retry.text = L.t("목록 새로고침")
+	_retry.icon = HubIcons.icon("refresh")
+	_retry.focus_mode = Control.FOCUS_NONE
+	_retry.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_retry.visible = false
+	_retry.pressed.connect(func() -> void:
+		if _category.item_count <= 1:
+			_request_categories()
+		_request_list())
+	vb.add_child(_retry)
 	_grid = GridContainer.new()
 	_grid.columns = 2
 	_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -196,6 +209,7 @@ func _request_list() -> void:
 		q.append("godot_version=" + ver)
 	_status.text = L.t("불러오는 중...")
 	_status.visible = true
+	_retry.visible = false
 	_prev.disabled = true
 	_next.disabled = true
 	var err := _list_req.request(API + "/asset?" + "&".join(q), _headers())
@@ -206,12 +220,11 @@ func _request_list() -> void:
 func _on_list(result: int, code: int, _h: PackedStringArray, body: PackedByteArray) -> void:
 	for c in _grid.get_children():
 		c.queue_free()
-	if result != HTTPRequest.RESULT_SUCCESS or code != 200:
-		_status.text = L.t("에셋 목록을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.")
-		return
-	var data: Variant = JSON.parse_string(body.get_string_from_utf8())
+	var data: Variant = JSON.parse_string(body.get_string_from_utf8()) if result == HTTPRequest.RESULT_SUCCESS and code == 200 else null
 	if not (data is Dictionary):
 		_status.text = L.t("에셋 목록을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.")
+		_status.visible = true
+		_retry.visible = true
 		return
 	var items: Array = data.get("result", [])
 	_pages = maxi(1, int(data.get("pages", 1)))

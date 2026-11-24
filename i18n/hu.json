@@ -348,6 +348,9 @@
 "Új játékprojekt",
 "A kiválasztott mappa nem üres.",
 "A projektmappa automatikusan létrejön.",
-"A projekt a kiválasztott mappában jön létre."
+"A projekt a kiválasztott mappában jön létre.",
+"• Jobb képminőség\n• Minden funkció elérhető\n• Régebbi hardverrel nem kompatibilis\n• Webes játékokhoz nem ajánlott",
+"• Gyengébb képminőség\n• Néhány funkció nem érhető el\n• A legtöbb hardveren működik\n• Webes játékokhoz ajánlott",
+"Godot 2-vel vagy régebbivel nem hozható létre új projekt. Válassz Godot 3-at vagy újabbat."
 ]
 }

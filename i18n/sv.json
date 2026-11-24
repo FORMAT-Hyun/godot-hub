@@ -348,6 +348,9 @@
 "Nytt spelprojekt",
 "Den valda mappen är inte tom.",
 "Projektmappen skapas automatiskt.",
-"Projektet skapas i den valda mappen."
+"Projektet skapas i den valda mappen.",
+"• Högre bildkvalitet\n• Alla funktioner tillgängliga\n• Inte kompatibel med äldre hårdvara\n• Rekommenderas inte för webbspel",
+"• Lägre bildkvalitet\n• Vissa funktioner saknas\n• Fungerar på det mesta av hårdvara\n• Rekommenderas för webbspel",
+"Nya projekt kan inte skapas med Godot 2 eller äldre. Välj Godot 3 eller nyare."
 ]
 }

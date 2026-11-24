@@ -348,6 +348,9 @@
 "Nový herní projekt",
 "Vybraná složka není prázdná.",
 "Složka projektu se vytvoří automaticky.",
-"Projekt se vytvoří ve vybrané složce."
+"Projekt se vytvoří ve vybrané složce.",
+"• Vyšší vizuální kvalita\n• Dostupné všechny funkce\n• Nekompatibilní se starším hardwarem\n• Nedoporučeno pro webové hry",
+"• Nižší vizuální kvalita\n• Některé funkce nejsou k dispozici\n• Funguje na většině hardwaru\n• Doporučeno pro webové hry",
+"S Godot 2 nebo starším nelze vytvářet nové projekty. Vyberte Godot 3 nebo novější."
 ]
 }

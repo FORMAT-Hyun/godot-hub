@@ -5,10 +5,13 @@ extends Node
 
 func _ready() -> void:
 	var exe := ""
+	var exe3 := ""
 	var dir := ""
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--test-exe="):
 			exe = arg.trim_prefix("--test-exe=")
+		elif arg.begins_with("--test-exe3="):
+			exe3 = arg.trim_prefix("--test-exe3=")
 		elif arg.begins_with("--test-dir="):
 			dir = Hub.normalize_path(arg.trim_prefix("--test-dir="))
 	if Hub.installs.is_empty():
@@ -52,6 +55,37 @@ func _ready() -> void:
 	d._create_folder.button_pressed = false
 	d._name_edit.text = "X"
 	_check("비어 있지 않은 폴더 막음", d._validate() != "")
+	# 4) 고도 3 에디터를 고르면 렌더러 목록이 OpenGL ES 3.0 / 2.0으로 바뀐다
+	if exe3 != "":
+		Hub.register_exe(exe3)
+		d.popup_centered()
+		await get_tree().process_frame
+		for i in d._editor_opt.item_count:
+			if str(Hub.find_install(str(d._editor_opt.get_item_metadata(i))).get("version", "")).begins_with("3."):
+				d._editor_opt.select(i)
+		d._update_renderers()
+		await get_tree().process_frame
+		var names: Array = []
+		for c in d._radios.get_children():
+			names.append(c.text)
+		_check("고도 3 렌더러 목록: " + ", ".join(names), names == ["OpenGL ES 3.0", "OpenGL ES 2.0"])
+		d._path_edit.text = dir
+		d._create_folder.button_pressed = true
+		d._name_edit.text = "Old Engine Game"
+		d._select_renderer("gles2")
+		d._vcs_opt.select(1)
+		d._validate()
+		d._create()
+		var p3 := dir.path_join("Old Engine Game")
+		var t3 := FileAccess.get_file_as_string(p3.path_join("project.godot"))
+		_check("고도 3 형식 (config_version=4)", t3.contains("config_version=4"))
+		_check("GLES2 드라이버", t3.contains("driver_name=\"GLES2\""))
+		_check("고도 3용 .gitignore", FileAccess.get_file_as_string(p3.path_join(".gitignore")).contains(".import/"))
+		# 다시 고도 4를 고르면 Forward+ 목록으로 돌아온다
+		d._editor_opt.select(0 if not str(Hub.find_install(str(d._editor_opt.get_item_metadata(0))).get("version", "")).begins_with("3.") else 1)
+		d._update_renderers()
+		await get_tree().process_frame
+		_check("고도 4로 돌아오면 Forward+", d._radios.get_child(0).text == "Forward+")
 	print("DONE")
 	get_tree().quit()
 

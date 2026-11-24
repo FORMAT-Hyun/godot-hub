@@ -19,8 +19,14 @@ func _ready() -> void:
 	_check("에셋 정보", a is Dictionary and str(a.get("download_url", "")) != "")
 	print("에셋: ", a.title, "  ", a.download_url)
 	Downloads.install_asset(a, dest)
+	_check("다운로드 제목이 처음부터 에셋 이름", str(Downloads.jobs[-1].title) == str(a.title))
+	var fake_full := false
 	while Downloads.is_active():
 		await get_tree().create_timer(0.5).timeout
+		var j: Dictionary = Downloads.jobs[-1]
+		if j.state == "downloading" and int(j.size) <= 0 and float(j.progress) >= 1.0:
+			fake_full = true
+	_check("크기 모를 때 100%로 표시하지 않음", not fake_full)
 	for j in Downloads.jobs:
 		if j.state == "error":
 			print("오류: ", j.message)

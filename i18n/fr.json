@@ -348,6 +348,9 @@
 "Nouveau projet de jeu",
 "Le dossier sélectionné n'est pas vide.",
 "Le dossier du projet sera créé automatiquement.",
-"Le projet sera créé dans le dossier sélectionné."
+"Le projet sera créé dans le dossier sélectionné.",
+"• Qualité visuelle supérieure\n• Toutes les fonctionnalités disponibles\n• Incompatible avec le matériel ancien\n• Déconseillé pour les jeux web",
+"• Qualité visuelle inférieure\n• Certaines fonctionnalités indisponibles\n• Fonctionne sur la plupart des matériels\n• Recommandé pour les jeux web",
+"Impossible de créer un nouveau projet avec Godot 2 ou antérieur. Choisissez Godot 3 ou plus récent."
 ]
 }

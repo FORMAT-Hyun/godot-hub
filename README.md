@@ -87,6 +87,7 @@ Translations were written by hand but have not been reviewed by native speakers.
 | `--hub-select=<n>` | Select the n-th row on the start page |
 | `--hub-es-search=<text>` | With `--hub-dialog=editor-settings`: pre-fill the search box |
 | `--hub-asset=<id>` | With `--hub-page=assets`: open that asset's details |
+| `--hub-embed-dialogs` | Draw dialogs inside the main window (so `--hub-screenshot` captures them) |
 | `--hub-screenshot=<png>` | Save the main window to a PNG and quit (`--hub-shot-delay=<seconds>`) |
 
 ## Tests

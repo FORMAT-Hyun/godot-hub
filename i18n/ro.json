@@ -348,6 +348,9 @@
 "Proiect de joc nou",
 "Folderul selectat nu este gol.",
 "Folderul proiectului va fi creat automat.",
-"Proiectul va fi creat în folderul selectat."
+"Proiectul va fi creat în folderul selectat.",
+"• Calitate vizuală mai bună\n• Toate funcțiile disponibile\n• Incompatibil cu hardware vechi\n• Nerecomandat pentru jocuri web",
+"• Calitate vizuală mai slabă\n• Unele funcții nu sunt disponibile\n• Funcționează pe majoritatea hardware-ului\n• Recomandat pentru jocuri web",
+"Nu se pot crea proiecte noi cu Godot 2 sau mai vechi. Alege Godot 3 sau mai nou."
 ]
 }

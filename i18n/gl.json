@@ -348,6 +348,9 @@
 "Novo proxecto de xogo",
 "O cartafol seleccionado non está baleiro.",
 "O cartafol do proxecto crearase automaticamente.",
-"O proxecto crearase no cartafol seleccionado."
+"O proxecto crearase no cartafol seleccionado.",
+"• Maior calidade visual\n• Todas as funcións dispoñibles\n• Incompatible con hardware antigo\n• Non recomendado para xogos web",
+"• Menor calidade visual\n• Algunhas funcións non dispoñibles\n• Funciona na maioría do hardware\n• Recomendado para xogos web",
+"Non se poden crear proxectos novos con Godot 2 ou anterior. Escolle Godot 3 ou posterior."
 ]
 }

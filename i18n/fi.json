@@ -348,6 +348,9 @@
 "Uusi peliprojekti",
 "Valittu kansio ei ole tyhjä.",
 "Projektikansio luodaan automaattisesti.",
-"Projekti luodaan valittuun kansioon."
+"Projekti luodaan valittuun kansioon.",
+"• Parempi kuvanlaatu\n• Kaikki ominaisuudet käytettävissä\n• Ei yhteensopiva vanhan laitteiston kanssa\n• Ei suositella verkkopeleihin",
+"• Heikompi kuvanlaatu\n• Osa ominaisuuksista ei ole käytettävissä\n• Toimii useimmilla laitteilla\n• Suositellaan verkkopeleihin",
+"Godot 2:lla tai vanhemmalla ei voi luoda uusia projekteja. Valitse Godot 3 tai uudempi."
 ]
 }

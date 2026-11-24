@@ -28,7 +28,8 @@ func _ready() -> void:
 	get_window().files_dropped.connect(_on_files_dropped)
 	# 설정 · 새 프로젝트 같은 창은 허브 안이 아니라 따로 뜨는 창(OS 창)이다.
 	# 따로 뜬 창도 허브와 같은 화면 배율을 쓰도록 맞춘다.
-	get_window().gui_embed_subwindows = false
+	# 개발용 --hub-embed-dialogs: 창을 허브 안에 그려 --hub-screenshot에 함께 찍히게 한다
+	get_window().gui_embed_subwindows = OS.get_cmdline_user_args().has("--hub-embed-dialogs")
 	get_tree().node_added.connect(func(n: Node) -> void:
 		if n is Window and n != get_window():
 			(n as Window).content_scale_factor = get_window().content_scale_factor)

@@ -348,6 +348,9 @@
 "New Game Project",
 "The selected folder is not empty.",
 "The project folder will be automatically created.",
-"The project will be created in the selected folder."
+"The project will be created in the selected folder.",
+"• Higher visual quality\n• All features available\n• Incompatible with older hardware\n• Not recommended for web games",
+"• Lower visual quality\n• Some features not available\n• Works on most hardware\n• Recommended for web games",
+"New projects can't be created with Godot 2 or older. Please choose Godot 3 or newer."
 ]
 }

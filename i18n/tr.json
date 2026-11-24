@@ -348,6 +348,9 @@
 "Yeni Oyun Projesi",
 "Seçilen klasör boş değil.",
 "Proje klasörü otomatik olarak oluşturulacak.",
-"Proje seçilen klasörde oluşturulacak."
+"Proje seçilen klasörde oluşturulacak.",
+"• Daha yüksek görsel kalite\n• Tüm özellikler kullanılabilir\n• Eski donanımla uyumsuz\n• Web oyunları için önerilmez",
+"• Daha düşük görsel kalite\n• Bazı özellikler kullanılamaz\n• Çoğu donanımda çalışır\n• Web oyunları için önerilir",
+"Godot 2 veya daha eski sürümlerle yeni proje oluşturulamaz. Lütfen Godot 3 veya daha yenisini seçin."
 ]
 }

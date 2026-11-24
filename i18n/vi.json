@@ -348,6 +348,9 @@
 "Dự án trò chơi mới",
 "Thư mục đã chọn không trống.",
 "Thư mục dự án sẽ được tạo tự động.",
-"Dự án sẽ được tạo trong thư mục đã chọn."
+"Dự án sẽ được tạo trong thư mục đã chọn.",
+"• Chất lượng hình ảnh cao hơn\n• Có đủ mọi tính năng\n• Không tương thích phần cứng cũ\n• Không khuyến nghị cho trò chơi web",
+"• Chất lượng hình ảnh thấp hơn\n• Một số tính năng không có\n• Chạy trên hầu hết phần cứng\n• Khuyến nghị cho trò chơi web",
+"Không thể tạo dự án mới bằng Godot 2 trở về trước. Hãy chọn Godot 3 trở lên."
 ]
 }

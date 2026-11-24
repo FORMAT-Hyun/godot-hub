@@ -62,13 +62,18 @@ func _on_job_updated(job: Dictionary) -> void:
 		return
 	var bar: ProgressBar = _widgets[job.id].bar
 	var status: Label = _widgets[job.id].status
-	bar.value = float(job.progress) * 100.0
+	# 크기를 모르면(progress < 0) 진행 막대를 '진행 중' 모양으로
+	bar.indeterminate = str(job.state) == "downloading" and float(job.progress) < 0.0
+	bar.value = maxf(float(job.progress), 0.0) * 100.0
 	status.remove_theme_color_override("font_color")
 	match str(job.state):
 		"queued":
 			status.text = L.t("대기 중")
 		"downloading":
-			status.text = "%d%%  ·  %s / %s" % [int(job.progress * 100), HubUI.human_size(job.downloaded), HubUI.human_size(job.size)]
+			if float(job.progress) < 0.0:
+				status.text = HubUI.human_size(job.downloaded)
+			else:
+				status.text = "%d%%  ·  %s / %s" % [int(job.progress * 100), HubUI.human_size(job.downloaded), HubUI.human_size(job.size)]
 		"extracting":
 			status.text = L.t("압축 푸는 중 %d%%") % int(job.progress * 100)
 		"done":
