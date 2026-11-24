@@ -4,6 +4,8 @@ A launcher that manages your Godot Engine projects and editor versions in one pl
 It looks and works like Godot's own project manager (tabs: Projects · Installs · Asset Library), with Godot's colors, fonts and icons.
 The original planning document is in [PLAN.md](PLAN.md).
 
+![Projects tab](docs/screenshots/projects.png)
+
 > Godot Hub is an unofficial tool. "Godot" and the Godot logo are trademarks of the Godot Foundation.
 
 ## Install
@@ -39,6 +41,14 @@ Windows only for now. The executable is not code-signed, so SmartScreen may warn
 - **Windows**: dialogs such as Settings, New Project and Install Editor open as separate windows you can move anywhere.
 - **Settings**: language, install folder, default project folder, what the Hub does after opening an editor,
   UI scale, editor settings window mode, GitHub token.
+
+## Screenshots
+
+| Installs | Asset Library |
+|---|---|
+| ![Installs tab](docs/screenshots/installs.png) | ![Asset Library tab](docs/screenshots/asset-library.png) |
+| **Create New Project** | **Editor settings** |
+| ![Create New Project window](docs/screenshots/new-project.png) | ![Editor settings window](docs/screenshots/editor-settings.png) |
 
 Hub data is stored in `%APPDATA%\GodotHub\hub_data`, and editors are installed to `%LOCALAPPDATA%\GodotHub\Editors` by default.
 
