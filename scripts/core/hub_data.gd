@@ -225,8 +225,12 @@ func templates_dir(inst: Dictionary) -> String:
 	return editor_settings_dir(inst).path_join("export_templates").path_join(name)
 
 
+## 고도가 직접 설치한 템플릿에는 version.txt가 없을 수 있어서, 버전 폴더에 파일이 있는지로 판단한다
 func has_templates(inst: Dictionary) -> bool:
-	return str(inst.get("version", "")) != "" and FileAccess.file_exists(templates_dir(inst).path_join("version.txt"))
+	if str(inst.get("version", "")) == "":
+		return false
+	var dir := templates_dir(inst)
+	return DirAccess.dir_exists_absolute(dir) and DirAccess.get_files_at(dir).size() > 0
 
 
 ## 공식 빌드 저장소의 템플릿 파일 주소 (버전 이름 규칙으로 만든다)
