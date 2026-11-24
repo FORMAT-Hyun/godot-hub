@@ -1,198 +1,203 @@
-# Godot Hub — 기획서 (v0.1)
+# Godot Hub — Planning document (v0.1)
 
-> 유니티 허브처럼 **프로젝트 + 에디터 버전**을 한 곳에서 관리하는 고도 엔진 런처.
-> UI 배치는 유니티 허브, 생김새(테마·색·폰트·아이콘)는 고도 에디터 그대로.
+> A Godot Engine launcher that manages **projects + editor versions** in one place, like Unity Hub.
+> Layout from Unity Hub; look (theme, colors, fonts, icons) from the Godot editor.
+
+> **Note:** this is the original plan, kept for reference. The app has changed since then:
+> the layout now follows Godot's own project manager (top tabs instead of a sidebar), the Learn/Community pages were dropped,
+> an Asset Library tab and export template management were added, the Hub has its own editor settings window,
+> and the UI is translated into every language the Godot editor supports. See [README.md](README.md) for the current feature list.
 
 ---
 
-## 1. 목표
+## 1. Goals
 
-| # | 목표 | 설명 |
+| # | Goal | Description |
 |---|------|------|
-| 1 | 프로젝트 통합 관리 | 흩어져 있는 고도 프로젝트를 목록 하나로 보고, 검색·정렬·즐겨찾기·실행 |
-| 2 | 에디터 버전 관리 | 여러 고도 버전(Stable / RC / Beta / Dev, 표준 / .NET)을 허브에서 받아서 설치·삭제 |
-| 3 | 프로젝트별 버전 고정 | 프로젝트마다 쓸 에디터 버전을 지정하고, 열면 그 버전으로 실행 |
-| 4 | 고도 느낌 그대로 | 고도 에디터를 쓰다가 넘어와도 이질감이 없는 UI |
+| 1 | One place for projects | See scattered Godot projects in a single list; search, sort, favorite, launch |
+| 2 | Editor version management | Download, install and remove several Godot versions (Stable / RC / Beta / Dev, standard / .NET) from the Hub |
+| 3 | Per-project version | Choose the editor version for each project and open it with that version |
+| 4 | Feels like Godot | A UI that feels familiar when coming from the Godot editor |
 
-**이번 범위가 아닌 것:** 에셋 스토어, 계정/로그인, 클라우드 빌드, 라이선스 관리 (유니티 허브에는 있지만 고도엔 필요 없음).
+**Out of scope for now:** asset store, accounts/login, cloud builds, license management (Unity Hub has them; Godot doesn't need them).
 
 ---
 
-## 2. 기술 스택 — **고도 엔진 4.x로 만든다** (추천)
+## 2. Tech stack — **build it with Godot 4.x** (recommended)
 
-| 선택지 | 장점 | 단점 |
+| Option | Pros | Cons |
 |--------|------|------|
-| **Godot 4.x + GDScript** ✅ | 고도 에디터 테마를 그대로 쓸 수 있어 "고도 느낌"이 공짜로 나옴. 고도 공식 프로젝트 매니저도 고도로 만들어져 있음. `HTTPRequest`, `ZIPReader`, `OS.create_process`, `ConfigFile`로 필요한 기능이 다 됨. 실행 파일 하나로 배포 가능 | 웹 기반 UI보다 레이아웃 잡는 데 손이 좀 더 감 |
-| Tauri / Electron | 웹 UI라 화면 만들기 빠름 | 고도 느낌을 CSS로 처음부터 흉내 내야 함. Electron은 용량이 큼 |
-| C# WPF / WinUI | 윈도우 네이티브 | 고도 느낌과 거리가 멀고 크로스플랫폼이 어려움 |
+| **Godot 4.x + GDScript** ✅ | Reuses the Godot editor theme, so the "Godot feel" comes for free. Godot's own project manager is built with Godot. `HTTPRequest`, `ZIPReader`, `OS.create_process` and `ConfigFile` cover everything. Ships as a single executable | Layout takes a bit more work than a web UI |
+| Tauri / Electron | Web UI is quick to build | The Godot look has to be recreated in CSS; Electron is large |
+| C# WPF / WinUI | Native on Windows | Far from the Godot look; hard to go cross-platform |
 
-- 언어: GDScript (나중에 무거운 작업만 C#이나 GDExtension으로 옮길 수 있음)
-- 대상 OS: **1차는 Windows**, 그 다음 Linux / macOS (경로·파일 이름 규칙만 추상화해 두기)
-- 참고: 비슷한 오픈소스로 *Godots*(고도로 만든 런처)와 *GodotEnv*(CLI)가 있음. 막히면 구현 방식을 참고할 것
+- Language: GDScript (heavy work can move to C# or GDExtension later)
+- Target OS: **Windows first**, then Linux / macOS (keep path and file name rules abstracted)
+- Reference: similar open-source tools exist — *Godots* (a launcher built with Godot) and *GodotEnv* (CLI)
 
 ---
 
-## 3. 화면 구성 (유니티 허브 배치)
+## 3. Screens (Unity Hub layout)
 
 ```
 ┌───────────────────────────────────────────────────────────────────────┐
 │ [G] Godot Hub                                              [⚙] [─][□][×]│
 ├──────────────┬────────────────────────────────────────────────────────┤
-│              │  프로젝트                         [가져오기 ▾] [새 프로젝트] │
-│  📁 프로젝트  │  ┌──────────────────────────────┐                        │
-│  🧩 설치      │  │ 🔍 검색                        │   [목록▦] [정렬 ▾]    │
-│  📚 배우기    │  └──────────────────────────────┘                        │
-│  🌐 커뮤니티  │  ★  이름              수정일          에디터 버전      ⋯  │
+│              │  Projects                           [Import ▾] [New project] │
+│  📁 Projects  │  ┌──────────────────────────────┐                        │
+│  🧩 Installs  │  │ 🔍 Search                     │   [List▦] [Sort ▾]     │
+│  📚 Learn     │  └──────────────────────────────┘                        │
+│  🌐 Community │  ★  Name            Modified        Editor version    ⋯  │
 │              │  ─────────────────────────────────────────────────────  │
-│              │  ☆ [ico] MyGame       2시간 전     [4.3-stable  ▾]   ⋯  │
+│              │  ☆ [ico] MyGame      2 hours ago   [4.3-stable  ▾]   ⋯  │
 │              │         D:\Games\MyGame                                 │
-│              │  ★ [ico] Platformer   어제         [4.4-stable  ▾]   ⋯  │
-│              │         D:\Dev\Platformer                ⚠ 버전 없음     │
+│              │  ★ [ico] Platformer  Yesterday     [4.4-stable  ▾]   ⋯  │
+│              │         D:\Dev\Platformer             ⚠ version missing │
 │              │                                                        │
 ├──────────────┤                                                        │
 │ v0.1.0       │                                                        │
 └──────────────┴────────────────────────────────────────────────────────┘
 ```
 
-### 3.1 공통 틀
-- **왼쪽 사이드바**: 프로젝트 / 설치 / 배우기 / 커뮤니티 탭, 맨 아래 허브 버전 표시
-- **오른쪽 위**: 해당 페이지의 주요 버튼 (유니티 허브처럼 파란색 Primary 버튼 하나 + 보조 버튼)
-- **설정 톱니바퀴**: 창 오른쪽 위
-- **다운로드 진행 상황**: 사이드바 아래 또는 상단에 진행 바 (유니티 허브의 다운로드 알림 위치)
+### 3.1 Common frame
+- **Left sidebar**: Projects / Installs / Learn / Community tabs, Hub version at the bottom
+- **Top right**: the page's main buttons (one blue primary button plus secondary buttons, like Unity Hub)
+- **Settings gear**: top right of the window
+- **Download progress**: a progress bar under the sidebar or at the top (where Unity Hub shows downloads)
 
-### 3.2 프로젝트 페이지
-- 열: ★즐겨찾기 · 아이콘 · 이름 + 경로 · 수정일 · 에디터 버전(드롭다운) · `⋯` 메뉴
-- 행 더블클릭 → 지정된 버전으로 에디터 열기
-- `⋯` 메뉴: 탐색기에서 열기 / 다른 버전으로 열기 / 실행(에디터 없이 게임 실행) / 목록에서 제거 / 경로 복사
-- **가져오기 ▾**: 폴더 추가 / 폴더 스캔(하위 폴더의 `project.godot` 자동 탐색)
-- 설치되지 않은 버전이 필요한 프로젝트엔 ⚠ 표시 + "설치" 바로가기
-- 폴더를 창에 드래그&드롭하면 추가
+### 3.2 Projects page
+- Columns: ★ favorite · icon · name + path · modified · editor version (dropdown) · `⋯` menu
+- Double-click a row → open the editor with the assigned version
+- `⋯` menu: show in Explorer / open with another version / run (game without editor) / remove from list / copy path
+- **Import ▾**: add folder / scan folder (find `project.godot` in subfolders)
+- Projects that need a version that isn't installed get a ⚠ mark and an "Install" shortcut
+- Drag & drop a folder onto the window to add it
 
-### 3.3 새 프로젝트 창 (유니티 허브의 템플릿 선택 화면 구도)
+### 3.3 New project window (Unity Hub's template picker layout)
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 새 프로젝트                       에디터 버전: [4.4-stable ▾] │
+│ New project                     Editor version: [4.4-stable ▾] │
 ├──────────────┬──────────────────────────────┬───────────────┤
-│ 전체          │  [Forward+]  [Mobile]  [Compat]│ 미리보기/설명  │
+│ All           │  [Forward+]  [Mobile]  [Compat]│ Preview/notes │
 │ 3D           │                                │               │
-│ 2D           │  (렌더러/템플릿 카드)             │ 프로젝트 이름   │
-│ 내 템플릿     │                                │ [_________]   │
-│              │                                │ 위치           │
+│ 2D           │  (renderer / template cards)    │ Project name  │
+│ My templates │                                │ [_________]   │
+│              │                                │ Location      │
 │              │                                │ [D:\...] [📁] │
-│              │                                │ ☑ Git 초기화   │
+│              │                                │ ☑ Init Git    │
 ├──────────────┴──────────────────────────────┴───────────────┤
-│                                          [취소] [프로젝트 생성] │
+│                                       [Cancel] [Create project] │
 └─────────────────────────────────────────────────────────────┘
 ```
-- 렌더러 선택: Forward+ / Mobile / Compatibility
-- 버전 관리: 없음 / Git (`.gitignore`, `.gitattributes` 자동 생성)
-- 나중에: 내 템플릿(폴더를 템플릿으로 등록)
+- Renderer: Forward+ / Mobile / Compatibility
+- Version control: none / Git (creates `.gitignore` and `.gitattributes`)
+- Later: my templates (register a folder as a template)
 
-### 3.4 설치 페이지
+### 3.4 Installs page
 ```
-  설치                                            [위치 지정] [에디터 설치]
-  [전체] [Stable] [Pre-release] [.NET]
+  Installs                                         [Locate] [Install editor]
+  [All] [Stable] [Pre-release] [.NET]
   ─────────────────────────────────────────────────────────────
   [G] Godot 4.4-stable          D:\GodotHub\Editors\4.4-stable     ⚙
-      Windows · 표준 · 내보내기 템플릿 ✔
+      Windows · standard · export templates ✔
   [G] Godot 4.3-stable (.NET)   D:\GodotHub\Editors\4.3-stable-mono ⚙
-      Windows · .NET · 내보내기 템플릿 ✖
+      Windows · .NET · export templates ✖
 ```
-- **에디터 설치** → 버전 목록 창 (탭: 공식 릴리스 / 프리릴리스 / 아카이브)
-  - 표준 / .NET 선택, "내보내기 템플릿도 받기" 체크박스 (= 유니티의 모듈 추가)
-- **위치 지정**: 이미 PC에 있는 `Godot_*.exe`를 등록
-- ⚙ 메뉴: 내보내기 템플릿 추가 / 탐색기에서 열기 / 기본 버전으로 설정 / 제거
+- **Install editor** → version list window (tabs: official releases / pre-releases / archive)
+  - Standard / .NET choice, "also download export templates" checkbox (like Unity's "add modules")
+- **Locate**: register a `Godot_*.exe` already on the PC
+- ⚙ menu: add export templates / show in Explorer / set as default / remove
 
-### 3.5 배우기 / 커뮤니티 페이지
-- 고도 공식 문서, 데모 프로젝트, 포럼, Discord 등 링크 카드 (`OS.shell_open`)
-- 우선순위 낮음 — 처음엔 링크 모음만
+### 3.5 Learn / Community pages
+- Link cards to the official docs, demo projects, forum, Discord, etc. (`OS.shell_open`)
+- Low priority — start with a list of links
 
-### 3.6 설정
-- 에디터 설치 경로 (기본: `%LOCALAPPDATA%\GodotHub\Editors`)
-- 새 프로젝트 기본 위치
-- 언어 (한국어 / English)
-- 에디터 실행 후 허브 동작: 그대로 / 최소화 / 종료
-- 에디터를 **독립 모드(self-contained)** 로 설치할지 여부 (아래 5.4 참고)
-- GitHub 토큰(선택, API 요청 제한 완화용)
-
----
-
-## 4. UI 스타일 — "고도 느낌"
-
-- 고도 4 기본 에디터 테마 색을 그대로 사용
-  - 배경 `#202531` / 패널 `#262c3b` / 구분선 `#363d4a` 계열
-  - 강조색(Primary 버튼, 선택 행) `#478cbf` (고도 블루)
-- 폰트: 고도 에디터 기본 폰트(Noto Sans 계열, 한글은 Noto Sans KR)
-- 아이콘: 고도 에디터 아이콘 SVG 스타일(단색 라인 아이콘)
-- `Theme` 리소스 하나(`hub_theme.tres`)로 전부 관리 → 나중에 라이트 테마도 추가 가능
-- 화면 배율(HiDPI) 대응: 설정에서 UI 배율 조정
+### 3.6 Settings
+- Editor install folder (default `%LOCALAPPDATA%\GodotHub\Editors`)
+- Default location for new projects
+- Language (Korean / English)
+- What the Hub does after launching an editor: stay / minimize / quit
+- Whether to install editors in **self-contained mode** (see 5.4)
+- GitHub token (optional, to raise the API rate limit)
 
 ---
 
-## 5. 핵심 기능 설계
+## 4. UI style — "Godot feel"
 
-### 5.1 에디터 다운로드
-- 소스: GitHub `godotengine/godot-builds` 릴리스 API (Stable·RC·Beta·Dev 빌드가 모두 있음)
+- Use the Godot 4 default editor theme colors
+  - background `#202531` / panels `#262c3b` / separators around `#363d4a`
+  - accent (primary buttons, selected rows) `#478cbf` (Godot blue)
+- Font: the Godot editor default (Noto Sans family; Noto Sans KR for Korean)
+- Icons: Godot editor SVG icon style (single-color line icons)
+- Manage everything with one `Theme` resource (`hub_theme.tres`) → a light theme can be added later
+- HiDPI: UI scale option in Settings
+
+---
+
+## 5. Core features
+
+### 5.1 Editor downloads
+- Source: the GitHub `godotengine/godot-builds` releases API (it has all Stable, RC, Beta and Dev builds)
   - `GET https://api.github.com/repos/godotengine/godot-builds/releases`
-  - 비로그인 요청은 시간당 60회 제한 → **결과를 로컬에 캐시** (예: 6시간), 필요하면 토큰 사용
-- 파일 이름 규칙 (Windows):
-  - 표준: `Godot_v{ver}_win64.exe.zip`
+  - Anonymous requests are limited to 60 per hour → **cache the result locally** (e.g. 6 hours), use a token if needed
+- File names (Windows):
+  - standard: `Godot_v{ver}_win64.exe.zip`
   - .NET: `Godot_v{ver}_mono_win64.zip`
-  - 내보내기 템플릿: `Godot_v{ver}_export_templates.tpz` (.NET은 `_mono_export_templates.tpz`)
-- 흐름: 다운로드(`HTTPRequest.download_file`, 진행률 표시) → `SHA512-SUMS.txt`로 무결성 검사 → `ZIPReader`로 압축 해제(스레드에서) → 설치 목록에 등록
-- 다운로드 큐: 여러 개 동시 요청 시 순서대로, 취소 가능
+  - export templates: `Godot_v{ver}_export_templates.tpz` (.NET: `_mono_export_templates.tpz`)
+- Flow: download (`HTTPRequest.download_file`, with progress) → integrity check with `SHA512-SUMS.txt` → extract with `ZIPReader` (on a thread) → add to the installs list
+- Download queue: several requests run in order and can be canceled
 
-### 5.2 프로젝트 인식 (`project.godot` 읽기)
-- `ConfigFile`로 파싱
-  - `[application] config/name` → 이름
-  - `config/icon` → 아이콘 (`res://` 경로를 프로젝트 폴더 기준으로 바꿔 로드)
-  - `config/features` → `PackedStringArray("4.3", "Forward Plus")` 에서 버전·렌더러 추출
+### 5.2 Reading projects (`project.godot`)
+- Parse with `ConfigFile`
+  - `[application] config/name` → name
+  - `config/icon` → icon (convert the `res://` path relative to the project folder)
+  - `config/features` → version and renderer from `PackedStringArray("4.3", "Forward Plus")`
   - `config_version` = 5 → Godot 4.x, 4 → Godot 3.x
-- 수정일: `project.godot` 또는 폴더의 최근 수정 시간
-- 허브가 지정한 버전은 허브 데이터에만 저장 (프로젝트 파일은 건드리지 않음)
-- 자동 매칭: 처음 추가할 때 `config/features`의 버전과 가장 가까운 설치 버전을 자동 지정
+- Modified time: from `project.godot` or the folder
+- The version the Hub assigns is stored only in Hub data (project files are not touched)
+- Auto-matching: when a project is first added, pick the installed version closest to its `config/features` version
 
-### 5.3 에디터 실행
+### 5.3 Launching the editor
 - `OS.create_process(editor_exe, ["--path", project_dir, "--editor"])`
-- 게임만 실행: `["--path", project_dir]`
-- PID를 저장해 "실행 중" 표시 (`OS.is_process_running`)
-- 이미 열려 있는 프로젝트를 다시 열려고 하면 경고
+- Run the game only: `["--path", project_dir]`
+- Keep the PID to show "running" (`OS.is_process_running`)
+- Warn when opening a project that is already open
 
-### 5.4 버전별 설정 분리 (선택 기능)
-- 고도는 실행 파일 옆에 `._sc_` 파일이 있으면 **독립 모드**로 동작 → 에디터 설정·내보내기 템플릿이 그 폴더 안에 저장됨
-- 켜면 버전끼리 에디터 설정/플러그인 캐시가 섞이지 않음
-- 끄면 기존처럼 `%APPDATA%\Godot` 공유
-  - 이 경우 내보내기 템플릿은 `%APPDATA%\Godot\export_templates\{4.3.stable}\`에 설치
+### 5.4 Per-version settings (optional)
+- If a `._sc_` file sits next to the executable, Godot runs in **self-contained mode** → editor settings and export templates are stored in that folder
+- When on, editor settings and plugin caches don't mix between versions
+- When off, everything shares `%APPDATA%\Godot` as usual
+  - in that case export templates go to `%APPDATA%\Godot\export_templates\{4.3.stable}\`
 
-### 5.5 새 프로젝트 생성
-- 폴더 생성 → `project.godot` 직접 작성 (`config_version=5`, 이름, features, 렌더러) → 기본 `icon.svg` 복사
-- Git 선택 시 `.gitignore`(`.godot/` 등), `.gitattributes` 생성, `git init` 실행 (Git 설치 시)
-- 생성 후 바로 해당 버전 에디터로 열기
+### 5.5 Creating a new project
+- Create the folder → write `project.godot` (`config_version=5`, name, features, renderer) → copy the default `icon.svg`
+- With Git: create `.gitignore` (`.godot/` etc.) and `.gitattributes`, run `git init` (if Git is installed)
+- Open it with the chosen editor right away
 
 ---
 
-## 6. 데이터 저장
+## 6. Data storage
 
-`user://` (프로젝트 설정에서 사용자 데이터 폴더를 `GodotHub`로 지정) 아래:
+Under `user://` (the project's user data folder is set to `GodotHub`):
 
 ```
 hub_data/
-├─ settings.json      # 경로, 언어, 동작 옵션
+├─ settings.json      # paths, language, behavior options
 ├─ installs.json      # [{id, version, channel, mono, path, exe, templates}]
 ├─ projects.json      # [{path, name, editor_id, favorite, last_opened}]
 └─ cache/
-   ├─ releases.json   # GitHub 릴리스 캐시 + 받은 시각
-   └─ icons/          # 프로젝트 아이콘 썸네일
+   ├─ releases.json   # GitHub release cache + fetch time
+   └─ icons/          # project icon thumbnails
 ```
 
-- 시작할 때 경로가 사라진 프로젝트/에디터는 "찾을 수 없음"으로 표시 (자동 삭제 X)
+- Projects or editors whose path disappeared are shown as "not found" at startup (not deleted automatically)
 
 ---
 
-## 7. 폴더 구조 (예정)
+## 7. Folder structure (planned)
 
 ```
-고도 허브/
+godot-hub/
 ├─ project.godot
 ├─ PLAN.md
 ├─ assets/
@@ -200,7 +205,7 @@ hub_data/
 │  ├─ fonts/
 │  └─ icons/
 ├─ scenes/
-│  ├─ main.tscn              # 사이드바 + 페이지 컨테이너
+│  ├─ main.tscn              # sidebar + page container
 │  ├─ pages/
 │  │  ├─ projects_page.tscn
 │  │  ├─ installs_page.tscn
@@ -209,50 +214,50 @@ hub_data/
 │  │  ├─ new_project_dialog.tscn
 │  │  ├─ install_editor_dialog.tscn
 │  │  └─ settings_dialog.tscn
-│  └─ components/            # 프로젝트 행, 설치 행, 진행 바 등
+│  └─ components/            # project row, install row, progress bar, ...
 └─ scripts/
    ├─ core/
-   │  ├─ hub_data.gd         # 저장/불러오기 (Autoload)
-   │  ├─ project_scanner.gd  # project.godot 파싱
+   │  ├─ hub_data.gd         # save/load (Autoload)
+   │  ├─ project_scanner.gd  # project.godot parsing
    │  ├─ editor_launcher.gd
-   │  ├─ release_api.gd      # GitHub API + 캐시
-   │  └─ download_manager.gd # 다운로드 큐, 해시 검사, 압축 해제
+   │  ├─ release_api.gd      # GitHub API + cache
+   │  └─ download_manager.gd # download queue, hash check, extraction
    └─ ui/
 ```
 
 ---
 
-## 8. 개발 단계
+## 8. Milestones
 
-| 단계 | 내용 | 완료 기준 |
+| Stage | Work | Done when |
 |------|------|-----------|
-| **0. 뼈대** | 고도 프로젝트 생성, 테마, 사이드바 + 빈 페이지 전환 | 창이 뜨고 탭 전환이 됨 |
-| **1. 프로젝트 목록** | 폴더 추가/스캔, `project.godot` 파싱, 목록·검색·정렬·즐겨찾기, 저장 | 내 프로젝트가 목록에 뜨고 재시작해도 유지 |
-| **2. 수동 에디터 등록 + 실행** | 기존 exe 등록, 프로젝트별 버전 지정, 더블클릭 실행 | 허브에서 프로젝트를 원하는 버전으로 열 수 있음 → **여기까지가 MVP** |
-| **3. 에디터 다운로드** | GitHub API, 버전 목록 창, 다운로드 큐·진행률·해시 검사·압축 해제 | 허브 안에서 4.x Stable/.NET 설치·삭제 |
-| **4. 새 프로젝트** | 새 프로젝트 창, 렌더러 선택, Git 초기화 | 허브에서 만든 프로젝트가 고도에서 정상으로 열림 |
-| **5. 부가 기능** | 내보내기 템플릿 설치, 독립 모드, 실행 중 표시, 드래그&드롭, 배우기 페이지 | — |
-| **6. 마무리** | 한/영 번역, 새 고도 버전 알림, 허브 자체 업데이트 확인, 배포용 exe 내보내기 | 다른 PC에서 exe 하나로 실행됨 |
-| 7. 확장 (나중에) | Linux/macOS 지원, 내 템플릿, CLI 명령(`godothub open MyGame`) | — |
+| **0. Skeleton** | Create the Godot project, theme, sidebar + empty page switching | The window opens and tabs switch |
+| **1. Project list** | Add/scan folders, parse `project.godot`, list · search · sort · favorites, saving | My projects show up and persist after a restart |
+| **2. Register editors + launch** | Register existing executables, per-project version, double-click to launch | Open a project with any version from the Hub → **this is the MVP** |
+| **3. Editor downloads** | GitHub API, version list window, queue · progress · hash check · extraction | Install/remove 4.x Stable/.NET inside the Hub |
+| **4. New project** | New project window, renderer choice, Git setup | Projects created by the Hub open correctly in Godot |
+| **5. Extras** | Export templates, self-contained mode, running indicator, drag & drop, Learn page | — |
+| **6. Polish** | Korean/English translation, new Godot version notice, Hub self-update check, release executable | Runs from a single exe on another PC |
+| 7. Later | Linux/macOS, my templates, CLI commands (`godothub open MyGame`) | — |
 
 ---
 
-## 9. 예상 문제와 대응
+## 9. Expected problems
 
-| 문제 | 대응 |
+| Problem | Plan |
 |------|------|
-| GitHub API 요청 제한(시간당 60회) | 캐시 + 선택적 토큰 |
-| 큰 파일(.NET 빌드 수백 MB) 압축 해제 중 UI 멈춤 | `Thread`/`WorkerThreadPool`에서 처리, 진행률은 시그널로 전달 |
-| 다운로드 중 끊김 | 임시 파일로 받고 완료·해시 확인 후에만 이동, 실패 시 재시도 |
-| Godot 3 프로젝트 | `config_version=4`로 구분해서 3.x 에디터만 고르도록 제한 |
-| 프로젝트를 상위 버전으로 열어 업그레이드되는 사고 | 프로젝트 버전보다 높은 에디터로 열 때 확인 창 표시 |
-| 경로에 한글/공백 (`D:\고도 허브`) | 실행 인자·파일 경로 처리 테스트 항목에 포함 |
+| GitHub API rate limit (60 per hour) | Cache + optional token |
+| UI freezing while extracting large files (.NET builds are hundreds of MB) | Extract on a `Thread`/`WorkerThreadPool`, report progress with signals |
+| Interrupted downloads | Download to a temp file, move it only after it completes and passes the hash check, retry on failure |
+| Godot 3 projects | Detect with `config_version=4` and only offer 3.x editors |
+| Accidentally upgrading a project by opening it with a newer version | Confirm before opening with an editor newer than the project |
+| Non-ASCII characters and spaces in paths | Include launch arguments and file paths in testing |
 
 ---
 
-## 10. 결정이 필요한 것
+## 10. Decisions needed
 
-1. 기술 스택: Godot 4.x + GDScript로 가도 되는지 (추천)
-2. 1차 지원 OS: Windows만 먼저 할지
-3. 독립 모드(버전별 설정 분리)를 기본값으로 켤지
-4. 허브 이름 (가칭 "Godot Hub" — 고도 상표 가이드상 공식처럼 보이지 않게 이름 조정 필요할 수 있음)
+1. Tech stack: go with Godot 4.x + GDScript? (recommended)
+2. First OS: Windows only at first?
+3. Should self-contained mode (per-version settings) be on by default?
+4. Name ("Godot Hub" for now — may need adjusting so it doesn't look official under the Godot trademark guidelines)

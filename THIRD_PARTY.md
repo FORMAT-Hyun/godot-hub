@@ -1,19 +1,17 @@
-# 서드파티 저작권 표시
+# Third-party notices
 
-## Godot Engine 에디터 아이콘
+## Godot Engine editor icons
 
-`scripts/ui/godot_icon_data.gd`에 들어 있는 아이콘은 Godot Engine 저장소의
-`editor/icons`(4.5-stable)에서 가져왔고, 아래 MIT 라이선스를 따릅니다.
-색(#e0e0e0 → #ffffff)만 바꿨어요.
+The icons in `scripts/ui/godot_icon_data.gd` come from `editor/icons` in the Godot Engine repository (4.5-stable)
+and are used under the MIT license below. Only their color was changed (#e0e0e0 → #ffffff).
 
-## Godot 로고 / 기본 프로젝트 아이콘
+## Godot logo / default project icon
 
-`icon.svg`, 로고 아이콘(`Godot.svg`), 위쪽 바의 로고 글자(`TitleBarLogo.svg`, 4.7-stable, 색 그대로)는
-Andrea Calabró가 만든 Godot 로고로,
-CC BY 4.0 라이선스(https://creativecommons.org/licenses/by/4.0/)를 따릅니다.
-Godot 이름과 로고는 Godot Foundation의 상표입니다. 이 런처는 비공식 프로그램이에요.
+`icon.svg`, the logo icon (`Godot.svg`) and the title bar logo (`TitleBarLogo.svg`, 4.7-stable, original colors)
+are the Godot logo by Andrea Calabró, licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+The Godot name and logo are trademarks of the Godot Foundation. This launcher is an unofficial program.
 
-## Godot Engine 라이선스 (MIT)
+## Godot Engine license (MIT)
 
 ```
 Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md).

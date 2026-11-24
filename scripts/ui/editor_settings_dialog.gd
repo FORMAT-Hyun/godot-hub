@@ -229,12 +229,12 @@ func _load_data() -> void:
     _update_info()
 
 
-## Godot 4.3 이하는 에디터 번역을 꺼낼 수 없어서, 다른 버전에서 받아 둔 한국어 이름을 빌려 쓴다
+## Godot 4.3 이하는 에디터 번역을 꺼낼 수 없어서, 다른 버전에서 같은 언어로 받아 둔 이름을 빌려 쓴다
 func _borrow_words() -> Dictionary:
     var dir := SettingsHelper.meta_path(_inst).get_base_dir()
     var best := {}
     for f in DirAccess.get_files_at(dir):
-        if not f.ends_with(".json"):
+        if not f.ends_with("." + L.current + ".json"):
             continue
         var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(dir.path_join(f)))
         if d is Dictionary and d.get("words", {}) is Dictionary and d.get("words", {}).size() > best.size():

@@ -3,7 +3,8 @@ extends Control
 
 const PAGES := [
 	{"id": "projects", "title": "프로젝트", "icon": "project_list"},
-	{"id": "installs", "title": "설치", "icon": "download"},
+	{"id": "installs", "title": "설치", "icon": "cube"},
+	{"id": "assets", "title": "에셋 스토어", "icon": "download"},
 ]
 const BASE_SIZE := Vector2(1180, 720)
 const MIN_SIZE := Vector2(940, 580)
@@ -86,6 +87,7 @@ func _build() -> void:
 	root.add_child(content)
 	_pages.projects = ProjectsPage.new()
 	_pages.installs = InstallsPage.new()
+	_pages.assets = AssetStorePage.new()
 	for id in _pages:
 		content.add_child(_pages[id])
 	_pages.projects.go_to_installs.connect(show_page.bind("installs"))

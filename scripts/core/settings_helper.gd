@@ -148,9 +148,13 @@ static func open(inst: Dictionary) -> String:
 	return ""
 
 
-## 허브 안 설정 창이 쓰는 설정 정보 캐시 파일 (버전마다 하나)
-static func meta_path(inst: Dictionary) -> String:
-	return Hub.data_dir.path_join("settings_meta").path_join(str(inst.get("id", "unknown")).validate_filename() + ".json")
+## 허브 안 설정 창이 쓰는 설정 정보 캐시 파일 (버전 × 허브 언어마다 하나).
+## 설정 이름 · 단축키 이름은 그 언어로 뽑아 둔다.
+static func meta_path(inst: Dictionary, lang := "") -> String:
+	if lang == "":
+		lang = L.current
+	var name := "%s.%s.json" % [str(inst.get("id", "unknown")).validate_filename(), lang]
+	return Hub.data_dir.path_join("settings_meta").path_join(name)
 
 
 ## 캐시된 설정 정보. 없으면 빈 사전
@@ -171,7 +175,9 @@ static func start_dump(inst: Dictionary) -> Dictionary:
 	DirAccess.make_dir_recursive_absolute(out.get_base_dir())
 	if FileAccess.file_exists(out):
 		DirAccess.remove_absolute(out)
-	var args := PackedStringArray(["--headless", "--editor", "--path", r.dir, "--", "--hub-dump=" + ProjectSettings.globalize_path(out)])
+	# --language: 사용자의 에디터 언어 설정은 그대로 두고, 이번 실행만 허브 언어로 띄워 그 언어 이름을 뽑는다
+	var args := PackedStringArray(["--headless", "--editor", "--language", L.current, "--path", r.dir,
+		"--", "--hub-dump=" + ProjectSettings.globalize_path(out)])
 	var pid := OS.create_process(r.exe, args)
 	if pid <= 0:
 		return {"pid": 0, "error": L.t("에디터를 실행하지 못했어요.")}

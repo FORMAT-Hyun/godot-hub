@@ -1,76 +1,116 @@
 # Godot Hub
 
-고도 엔진 프로젝트와 에디터 버전을 한 곳에서 관리하는 런처입니다. Godot 4.7로 만들었어요.
-화면은 고도 프로젝트 매니저와 같은 배치(위쪽 탭: 프로젝트 · 설치)이고, 색·폰트·아이콘도 고도 스타일을 씁니다.
-기획 내용은 [PLAN.md](PLAN.md)에 있어요.
+A launcher that manages your Godot Engine projects and editor versions in one place, built with Godot 4.7.
+It looks and works like Godot's own project manager (tabs: Projects · Installs · Asset Library), with Godot's colors, fonts and icons.
+The original planning document is in [PLAN.md](PLAN.md).
 
-## 설치
+> Godot Hub is an unofficial tool. "Godot" and the Godot logo are trademarks of the Godot Foundation.
 
-[릴리즈 페이지](https://github.com/FORMAT-Hyun/godot-hub/releases/latest)에서 `GodotHub-<버전>-Setup.exe`를 받아 실행하세요.
-관리자 권한 없이 내 계정에 설치되고, 시작 메뉴(선택하면 바탕화면)에 바로가기가 생겨요.
-제거는 Windows 설정 > 앱에서 할 수 있어요. 설치 없이 쓰려면 `GodotHub-<버전>-portable.zip`을 받아 압축을 풀고 실행하세요.
+## Install
 
-설치 파일 만들기 (Inno Setup 6 필요):
+Download `GodotHub-<version>-Setup.exe` from the [releases page](https://github.com/FORMAT-Hyun/godot-hub/releases/latest) and run it.
+It installs for your user account without admin rights and adds a Start menu shortcut (and a desktop shortcut if you choose).
+Uninstall it from Windows Settings > Apps. To use it without installing, download `GodotHub-<version>-portable.zip`, extract it and run `GodotHub.exe`.
+
+Windows only for now. The executable is not code-signed, so SmartScreen may warn the first time ("More info" > "Run anyway").
+
+## Features
+
+- **Projects**: add a folder, scan subfolders for projects, drag & drop folders onto the window, search, sort, favorites,
+  per-project editor version, double-click to open, warning before opening with a different version.
+  Side menu like the Godot project manager: Edit (verbose · recovery mode · another version), Run, Rename, Duplicate,
+  Manage Tags (search with `tag:name`), Remove (optionally move the folder to the Recycle Bin), Remove Missing, Donate.
+- **Installs**: install Stable / pre-release / archived versions (standard and .NET) from GitHub (`godotengine/godot-builds`),
+  choose the install folder, register an existing executable, default version (☆), self-contained mode (`._sc_`),
+  properties window, uninstall (moves to the Recycle Bin).
+  - **Export templates**: install, manage and remove them per editor. They go straight into the folder that editor
+    reads (`export_templates/<version>`), including self-contained editors.
+  - **Editor settings**: by default the Hub opens its own settings window. It reads each version's setting names, option lists,
+    ranges, defaults and shortcuts from that editor (in the Hub's language) and edits the settings file directly — it also works
+    for versions that have never been opened. In Settings you can switch to opening the real Godot editor settings window instead.
+    Tested with Godot 4.0–4.7.
+- **Asset Library**: browse templates, projects and demos from the Godot Asset Library (search, sort, category, Godot version),
+  then download one and add it as a new project — the same as the Asset Library tab in Godot's project manager.
+- **New project**: Forward+ / Mobile / Compatibility renderer, optional Git setup.
+- **Languages**: every language the Godot editor supports (39) plus Korean. It follows the system language by default
+  and can be changed in Settings. Arabic, Persian and Hebrew use a right-to-left layout.
+- **Windows**: dialogs such as Settings, New Project and Install Editor open as separate windows you can move anywhere.
+- **Settings**: language, install folder, default project folder, what the Hub does after opening an editor,
+  UI scale, editor settings window mode, GitHub token.
+
+Hub data is stored in `%APPDATA%\GodotHub\hub_data`, and editors are installed to `%LOCALAPPDATA%\GodotHub\Editors` by default.
+
+## Run from source
+
+1. Open this folder with the Godot 4.7 editor and press F5.
+   (The first time, open it in the editor or run `--import` once so class names are registered.)
+2. Or from the command line:
 
 ```powershell
-& "D:\Godot_v4.7-stable_win64.exe\Godot_v4.7-stable_win64_console.exe" --headless --path "D:\고도 허브" --export-release "Windows Desktop" "D:\고도 허브\build\GodotHub.exe"
+& "<path>\Godot_v4.7-stable_win64.exe" --path "<path to this folder>"
+```
+
+## Build the installer
+
+Requires the Godot 4.7 Windows export templates and [Inno Setup 6](https://jrsoftware.org/isinfo.php).
+
+```powershell
+& "<path>\Godot_v4.7-stable_win64_console.exe" --headless --path . --export-release "Windows Desktop" build\GodotHub.exe
 ```
 
 ```powershell
-& "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe" "D:\고도 허브\installer\GodotHub.iss"
+& "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe" installer\GodotHub.iss
 ```
 
-## 소스에서 실행
+The installer is written to `build\GodotHub-<version>-Setup.exe`.
 
-1. Godot 4.7 에디터로 이 폴더를 열고 F5를 누릅니다.
-   (처음 한 번은 에디터로 열거나 `--import`를 실행해야 클래스 이름이 등록돼요.)
-2. 명령줄로 실행하려면:
+## Translations
 
-```powershell
-& "D:\Godot_v4.7-stable_win64.exe\Godot_v4.7-stable_win64.exe" --path "D:\고도 허브"
-```
+UI strings are written in Korean in the code and wrapped with `L.t("...")`.
 
-## 기능
+- `i18n/keys.json` — the source strings (append-only, so existing translations stay aligned)
+- `i18n/<language>.json` — translations in the same order
+- `i18n/patches/*.json` — new strings added in a release; apply with `python i18n/apply_patch.py <patch>`
+- `python i18n/check.py` — checks every language file (count, `%s` / `%d` placeholders, leading/trailing whitespace)
 
-- **프로젝트**: 폴더 추가, 하위 폴더 자동 탐색, 창에 드래그&드롭, 검색·정렬·즐겨찾기,
-  프로젝트별 에디터 버전 지정, 더블클릭으로 열기, 버전이 다르면 열기 전에 경고.
-  오른쪽 메뉴(고도 프로젝트 매니저와 같은 구성): 편집(자세한 로그 · 복구 모드 · 다른 버전),
-  실행, 이름 바꾸기, 복제, 태그 설정(`tag:이름`으로 검색), 제거(폴더 휴지통 이동 선택), 누락된 부분 제거, 기부
-- **설치**: GitHub(godotengine/godot-builds)에서 Stable / 프리릴리스 / 아카이브 버전 설치
-  (표준 · .NET), 설치 경로 지정, 기존 exe 등록(위치 지정), 에디터 설정 열기(기본: 허브 안 설정 창 — 그 버전 에디터에서 목록 항목·범위·기본값·한국어 이름·단축키를
-  읽어 와 고도와 같은 입력칸으로 보여 주고, 설정 파일이 없는 버전이면 처음 열 때 만들어 줌 /
-  설정에서 "고도 에디터의 설정 창"으로 바꾸면 그 버전 에디터의 진짜 설정 창을 본창 없이 띄움),
-  독립 모드(`._sc_`) 켜기/끄기, 제거(휴지통으로 이동).
-  내보내기 템플릿 설치 · 제거(그 에디터가 찾는 `export_templates/<버전>` 폴더에 바로 설치, 독립 모드도 지원), 속성 창.
-- **창**: 설정 · 새 프로젝트 · 에디터 설치 같은 창은 허브 밖으로 따로 뜨는 창이라 자유롭게 옮길 수 있어요.
-- **새 프로젝트**: Forward+ / Mobile / Compatibility 렌더러 선택, Git 초기화
-- **언어**: 고도 에디터가 지원하는 39개 언어 + 한국어. 기본은 시스템 언어, 설정에서 바꿀 수 있어요.
-  번역 파일은 `i18n/<언어>.json`(원문 목록은 `i18n/keys.json`), 검사는 `python i18n/check.py`.
-- **설정**: 언어, 설치 경로, 새 프로젝트 기본 위치, 에디터 실행 후 허브 동작, 화면 배율, 에디터 설정 창 방식, GitHub 토큰
+Translations were written by hand but have not been reviewed by native speakers. Corrections are welcome — please open an issue or pull request.
 
-허브 데이터는 `%APPDATA%\GodotHub\hub_data`에, 에디터는 기본적으로
-`%LOCALAPPDATA%\GodotHub\Editors`에 설치돼요.
+## Development options (after `--`)
 
-## 개발용 옵션 (`--` 뒤에 붙임)
-
-| 옵션 | 설명 |
+| Option | Description |
 |------|------|
-| `--hub-data=<폴더>` | 실제 데이터 대신 테스트용 데이터 폴더 사용 |
-| `--hub-page=installs` | 시작할 페이지 (projects / installs) |
-| `--hub-dialog=new` | 시작하자마자 창 열기 (new / install / settings / editor-settings / properties) |
-| `--hub-es-search=<검색어>` | `--hub-dialog=editor-settings`와 함께: 설정 창에 검색어를 넣어 둠 |
-| `--hub-screenshot=<png>` | 화면을 PNG로 저장하고 종료 (`--hub-shot-delay=초`) |
+| `--hub-data=<folder>` | Use a separate data folder instead of the real one |
+| `--hub-page=installs` | Start page (`projects` / `installs` / `assets`) |
+| `--hub-dialog=new` | Open a window at startup (`new` / `install` / `settings` / `editor-settings` / `properties`) |
+| `--hub-select=<n>` | Select the n-th row on the start page |
+| `--hub-es-search=<text>` | With `--hub-dialog=editor-settings`: pre-fill the search box |
+| `--hub-asset=<id>` | With `--hub-page=assets`: open that asset's details |
+| `--hub-screenshot=<png>` | Save the main window to a PNG and quit (`--hub-shot-delay=<seconds>`) |
 
-다운로드 테스트:
+## Tests
+
+Each test is a scene run headless, for example:
 
 ```powershell
-& "D:\Godot_v4.7-stable_win64.exe\Godot_v4.7-stable_win64_console.exe" --headless --path "D:\고도 허브" res://tests/test_download.tscn -- --hub-data=D:\temp\hubtest
+& "<path>\Godot_v4.7-stable_win64_console.exe" --headless --path . res://tests/test_project_ops.tscn -- --hub-data=<test data folder> --test-project=<copy of a project>
 ```
 
-## 구조
+| Scene | What it checks |
+|------|------|
+| `tests/test_download.tscn` | Downloading and installing an editor |
+| `tests/test_project_ops.tscn` | Rename, tags, duplicate, remove missing |
+| `tests/test_editor_settings.tscn` | Hub settings window: reading, saving values and shortcuts, creating the settings file |
+| `tests/test_templates.tscn` | Installing and removing export templates (real download) |
+| `tests/test_asset.tscn` | Downloading an Asset Library project and adding it (real download) |
+
+## Structure
 
 ```
-scripts/core/   Hub(데이터) · Releases(GitHub 목록) · Downloads(다운로드 큐) · 버전/프로젝트 파서
-scripts/ui/     메인 화면 · 페이지 · 대화상자 · 테마 · 아이콘
-tests/          다운로드 테스트 씬
+scripts/core/   Hub (data) · Releases (GitHub list) · Downloads (queue) · settings helper · translations · parsers
+scripts/ui/     main window · pages · dialogs · theme · icons
+i18n/           translations
+installer/      Inno Setup script and icon
+tests/          test scenes
 ```
+
+See [THIRD_PARTY.md](THIRD_PARTY.md) for the licenses of the Godot icons and logo.

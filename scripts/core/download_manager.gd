@@ -6,7 +6,7 @@ signal job_updated(job: Dictionary)
 
 const ACTIVE_STATES := ["queued", "downloading", "extracting"]
 
-## {id, kind("editor" | "templates"), tag, mono, url, size, file, title, state, progress, downloaded, message, tmp}
+## {id, kind("editor" | "templates" | "asset"), tag, mono, url, size, file, title, state, progress, downloaded, message, tmp}
 var jobs: Array = []
 
 var _current: Dictionary = {}
@@ -53,6 +53,20 @@ func install_templates(inst: Dictionary) -> void:
 	var url := Hub.templates_url(inst)
 	_enqueue("templates", tag, mono, {"url": url, "name": url.get_file(), "size": 0})
 	jobs[-1]["dest"] = Hub.templates_dir(inst)
+
+
+## 에셋 라이브러리의 프로젝트(템플릿 · 데모)를 받아 dest 폴더에 새 프로젝트로 풀고 목록에 추가한다
+func install_asset(asset: Dictionary, dest: String) -> void:
+	var url := str(asset.get("download_url", ""))
+	if url == "":
+		Hub.toast.emit(L.t("다운로드 주소가 없는 에셋이에요"))
+		return
+	var tag := "asset-" + str(asset.get("asset_id", ""))
+	if is_busy_with(tag, false, "asset"):
+		return
+	_enqueue("asset", tag, false, {"url": url, "name": tag + ".zip", "size": 0})
+	jobs[-1]["dest"] = Hub.normalize_path(dest)
+	jobs[-1]["title"] = str(asset.get("title", tag))
 
 
 func install_editor(release: Dictionary, mono: bool) -> void:
@@ -177,6 +191,9 @@ func _on_downloaded(result: int, code: int, _headers: PackedStringArray, _body: 
 	if job.kind == "templates":
 		_thread.start(_extract_templates.bind(job.tmp, job.dest))
 		return
+	if job.kind == "asset":
+		_thread.start(_extract_asset.bind(job.tmp, job.dest))
+		return
 	job["dest"] = Hub.editor_install_dir(job.tag, job.mono)
 	_thread.start(_extract_editor.bind(job.tmp, job.dest))
 
@@ -206,6 +223,44 @@ func _extract_editor(zip_path: String, dest: String) -> Dictionary:
 		f.close()
 		if i % 10 == 0:
 			call_deferred("_on_extract_progress", float(i) / files.size())
+	zr.close()
+	return _done({"ok": true})
+
+
+## 에셋 zip에서 project.godot가 있는 폴더를 찾아 그 안의 내용만 dest에 푼다
+## (GitHub 압축 파일은 보통 "저장소-커밋/" 폴더 하나로 감싸져 있다)
+func _extract_asset(zip_path: String, dest: String) -> Dictionary:
+	var zr := ZIPReader.new()
+	if zr.open(zip_path) != OK:
+		return _done({"ok": false, "msg": L.t("압축 파일이 손상됐어요. 다시 받아 주세요.")})
+	var files := zr.get_files()
+	var prefix := ""
+	var best := 1 << 30
+	for name in files:
+		if name.get_file() == "project.godot" and name.count("/") < best:
+			best = name.count("/")
+			prefix = name.get_base_dir()
+			if prefix != "":
+				prefix += "/"
+	if best == 1 << 30:
+		zr.close()
+		return _done({"ok": false, "msg": L.t("이 에셋에는 project.godot가 없어서 프로젝트로 열 수 없어요")})
+	DirAccess.make_dir_recursive_absolute(dest)
+	for i in files.size():
+		var name := files[i]
+		if not name.begins_with(prefix) or name.ends_with("/") or name.split("/").has(".."):
+			continue
+		var out := dest.path_join(name.substr(prefix.length()))
+		DirAccess.make_dir_recursive_absolute(out.get_base_dir())
+		var f := FileAccess.open(out, FileAccess.WRITE)
+		if f == null:
+			zr.close()
+			return _done({"ok": false, "msg": L.t("파일을 쓸 수 없어요:
+") + out})
+		f.store_buffer(zr.read_file(name))
+		f.close()
+		if i % 10 == 0:
+			call_deferred("_on_extract_progress", float(i + 1) / files.size())
 	zr.close()
 	return _done({"ok": true})
 
@@ -261,6 +316,14 @@ func _on_extract_done(res: Dictionary) -> void:
 	DirAccess.remove_absolute(job.tmp)
 	if not res.get("ok", false):
 		_fail(job, str(res.get("msg", L.t("설치 실패"))))
+		return
+	if job.kind == "asset":
+		job.state = "done"
+		job.progress = 1.0
+		Hub.add_project(job.dest)
+		Hub.toast.emit(L.t("'%s' 프로젝트를 추가했어요") % job.title)
+		_finish_current()
+		get_tree().create_timer(8.0).timeout.connect(dismiss.bind(int(job.id)))
 		return
 	if job.kind == "templates":
 		job.state = "done"

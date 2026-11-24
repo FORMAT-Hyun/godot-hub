@@ -1,5 +1,5 @@
-; Godot Hub 설치 프로그램 (Inno Setup 6)
-; 빌드: ISCC.exe installer\GodotHub.iss  (먼저 build\GodotHub.exe 를 내보내야 함)
+; Godot Hub installer (Inno Setup 6)
+; Build: ISCC.exe installer\GodotHub.iss  (export build\GodotHub.exe first)
 
 #define AppName "Godot Hub"
 #ifndef AppVersion
@@ -16,7 +16,7 @@ AppSupportURL=https://github.com/FORMAT-Hyun/godot-hub/issues
 DefaultDirName={autopf}\Godot Hub
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
-; 관리자 권한 없이 내 계정에만 설치 (원하면 모든 사용자 설치도 고를 수 있음)
+; Install for the current user without admin rights (installing for all users is still offered)
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=..\build
@@ -31,8 +31,8 @@ ArchitecturesInstallIn64BitMode=x64compatible
 CloseApplications=yes
 
 [Languages]
-Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
