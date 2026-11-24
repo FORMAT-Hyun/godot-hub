@@ -333,6 +333,21 @@
 "Údar",
 "Catagóir",
 "Ceadúnas",
-"Cuir leis mar thionscadal"
+"Cuir leis mar thionscadal",
+"• Tacaíonn sé le hardáin deisce amháin.\n• Grafaic 3D chun cinn ar fáil.\n• Is féidir é a scálú do radhairc mhóra chasta.\n• Úsáideann sé inneall RenderingDevice.\n• Rindreáil níos moille ar radhairc shimplí.",
+"• Tacaíonn sé le hardáin deisce + shoghluaiste.\n• Grafaic 3D níos simplí.\n• Níos lú scálaithe do radhairc chasta.\n• Úsáideann sé inneall RenderingDevice.\n• Rindreáil thapa ar radhairc shimplí.",
+"• Tacaíonn sé le hardáin deisce, shoghluaiste + ghréasáin.\n• An ghrafaic 3D is simplí.\n• Ceaptha do ghléasanna lag/sean.\n• Úsáideann sé inneall OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• An rindreáil is tapa ar radhairc shimplí.",
+"Cruthaigh agus Cuir in Eagar",
+"Leagan an eagarthóra:",
+"Ainm an tionscadail:",
+"Cosán an tionscadail:",
+"Cruthaigh fillteán",
+"Rindreálaí:",
+"Is féidir an rindreálaí a athrú níos déanaí, ach b'fhéidir go mbeidh ort radhairc a choigeartú.",
+"Meiteashonraí rialaithe leaganacha:",
+"Tionscadal cluiche nua",
+"Níl an fillteán roghnaithe folamh.",
+"Cruthófar fillteán an tionscadail go huathoibríoch.",
+"Cruthófar an tionscadal san fhillteán roghnaithe."
 ]
 }

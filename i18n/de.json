@@ -333,6 +333,21 @@
 "Autor",
 "Kategorie",
 "Lizenz",
-"Als Projekt hinzufügen"
+"Als Projekt hinzufügen",
+"• Unterstützt nur Desktop-Plattformen.\n• Fortgeschrittene 3D-Grafik verfügbar.\n• Skaliert auf große, komplexe Szenen.\n• Verwendet das RenderingDevice-Backend.\n• Langsameres Rendern einfacher Szenen.",
+"• Unterstützt Desktop- + Mobilplattformen.\n• Weniger fortgeschrittene 3D-Grafik.\n• Weniger skalierbar für komplexe Szenen.\n• Verwendet das RenderingDevice-Backend.\n• Schnelles Rendern einfacher Szenen.",
+"• Unterstützt Desktop-, Mobil- + Web-Plattformen.\n• Am wenigsten fortgeschrittene 3D-Grafik.\n• Für schwache/ältere Geräte gedacht.\n• Verwendet das OpenGL-3-Backend (OpenGL 3.3/ES 3.0/WebGL2).\n• Schnellstes Rendern einfacher Szenen.",
+"Erstellen & Bearbeiten",
+"Editor-Version:",
+"Projektname:",
+"Projektpfad:",
+"Ordner erstellen",
+"Renderer:",
+"Der Renderer kann später geändert werden, aber Szenen müssen eventuell angepasst werden.",
+"Versionsverwaltungs-Metadaten:",
+"Neues Spielprojekt",
+"Der ausgewählte Ordner ist nicht leer.",
+"Der Projektordner wird automatisch erstellt.",
+"Das Projekt wird im ausgewählten Ordner erstellt."
 ]
 }

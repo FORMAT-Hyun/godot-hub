@@ -333,6 +333,21 @@
 "Autor",
 "Categorie",
 "Licență",
-"Adaugă ca proiect"
+"Adaugă ca proiect",
+"• Acceptă doar platforme desktop.\n• Grafică 3D avansată disponibilă.\n• Se extinde la scene mari și complexe.\n• Folosește backendul RenderingDevice.\n• Randare mai lentă a scenelor simple.",
+"• Acceptă platforme desktop + mobile.\n• Grafică 3D mai puțin avansată.\n• Mai puțin scalabil pentru scene complexe.\n• Folosește backendul RenderingDevice.\n• Randare rapidă a scenelor simple.",
+"• Acceptă platforme desktop, mobile + web.\n• Cea mai simplă grafică 3D.\n• Destinat dispozitivelor slabe/vechi.\n• Folosește backendul OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• Cea mai rapidă randare a scenelor simple.",
+"Creează și editează",
+"Versiunea editorului:",
+"Numele proiectului:",
+"Calea proiectului:",
+"Creează folder",
+"Motor de randare:",
+"Motorul de randare poate fi schimbat mai târziu, dar scenele ar putea necesita ajustări.",
+"Metadate pentru controlul versiunilor:",
+"Proiect de joc nou",
+"Folderul selectat nu este gol.",
+"Folderul proiectului va fi creat automat.",
+"Proiectul va fi creat în folderul selectat."
 ]
 }

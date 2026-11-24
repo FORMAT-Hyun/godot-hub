@@ -333,6 +333,21 @@
 "Auteur",
 "Categorie",
 "Licentie",
-"Toevoegen als project"
+"Toevoegen als project",
+"• Ondersteunt alleen desktopplatforms.\n• Geavanceerde 3D-graphics beschikbaar.\n• Schaalt naar grote, complexe scènes.\n• Gebruikt de RenderingDevice-backend.\n• Tragere weergave van eenvoudige scènes.",
+"• Ondersteunt desktop- + mobiele platforms.\n• Minder geavanceerde 3D-graphics.\n• Minder schaalbaar voor complexe scènes.\n• Gebruikt de RenderingDevice-backend.\n• Snelle weergave van eenvoudige scènes.",
+"• Ondersteunt desktop-, mobiele + webplatforms.\n• Minst geavanceerde 3D-graphics.\n• Bedoeld voor zwakke/oudere apparaten.\n• Gebruikt de OpenGL 3-backend (OpenGL 3.3/ES 3.0/WebGL2).\n• Snelste weergave van eenvoudige scènes.",
+"Maken en bewerken",
+"Editorversie:",
+"Projectnaam:",
+"Projectpad:",
+"Map maken",
+"Renderer:",
+"De renderer kan later worden gewijzigd, maar scènes moeten dan mogelijk worden aangepast.",
+"Versiebeheermetadata:",
+"Nieuw gameproject",
+"De geselecteerde map is niet leeg.",
+"De projectmap wordt automatisch gemaakt.",
+"Het project wordt in de geselecteerde map gemaakt."
 ]
 }

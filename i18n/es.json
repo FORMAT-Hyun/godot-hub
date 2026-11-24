@@ -333,6 +333,21 @@
 "Autor",
 "Categoría",
 "Licencia",
-"Añadir como proyecto"
+"Añadir como proyecto",
+"• Solo admite plataformas de escritorio.\n• Gráficos 3D avanzados disponibles.\n• Escala a escenas grandes y complejas.\n• Usa el backend RenderingDevice.\n• Renderizado más lento de escenas simples.",
+"• Admite plataformas de escritorio + móviles.\n• Gráficos 3D menos avanzados.\n• Menos escalable para escenas complejas.\n• Usa el backend RenderingDevice.\n• Renderizado rápido de escenas simples.",
+"• Admite plataformas de escritorio, móviles + web.\n• Gráficos 3D más básicos.\n• Pensado para equipos modestos/antiguos.\n• Usa el backend OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• El renderizado más rápido de escenas simples.",
+"Crear y editar",
+"Versión del editor:",
+"Nombre del proyecto:",
+"Ruta del proyecto:",
+"Crear carpeta",
+"Renderizador:",
+"El renderizador se puede cambiar más tarde, pero puede que haya que ajustar las escenas.",
+"Metadatos de control de versiones:",
+"Nuevo proyecto de juego",
+"La carpeta seleccionada no está vacía.",
+"La carpeta del proyecto se creará automáticamente.",
+"El proyecto se creará en la carpeta seleccionada."
 ]
 }

@@ -333,6 +333,21 @@
 "Autor",
 "Kategória",
 "Licencia",
-"Pridať ako projekt"
+"Pridať ako projekt",
+"• Podporuje iba desktopové platformy.\n• K dispozícii je pokročilá 3D grafika.\n• Škáluje na veľké zložité scény.\n• Používa backend RenderingDevice.\n• Pomalšie vykresľovanie jednoduchých scén.",
+"• Podporuje desktopové + mobilné platformy.\n• Menej pokročilá 3D grafika.\n• Horšie škáluje na zložité scény.\n• Používa backend RenderingDevice.\n• Rýchle vykresľovanie jednoduchých scén.",
+"• Podporuje desktopové, mobilné + webové platformy.\n• Najjednoduchšia 3D grafika.\n• Určené pre slabšie/staršie zariadenia.\n• Používa backend OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• Najrýchlejšie vykresľovanie jednoduchých scén.",
+"Vytvoriť a upraviť",
+"Verzia editora:",
+"Názov projektu:",
+"Cesta k projektu:",
+"Vytvoriť priečinok",
+"Renderer:",
+"Renderer sa dá neskôr zmeniť, ale scény bude možno treba upraviť.",
+"Metadáta správy verzií:",
+"Nový herný projekt",
+"Vybraný priečinok nie je prázdny.",
+"Priečinok projektu sa vytvorí automaticky.",
+"Projekt sa vytvorí vo vybranom priečinku."
 ]
 }

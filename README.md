@@ -31,7 +31,9 @@ Windows only for now. The executable is not code-signed, so SmartScreen may warn
     Tested with Godot 4.0–4.7.
 - **Asset Library**: browse templates, projects and demos from the Godot Asset Library (search, sort, category, Godot version),
   then download one and add it as a new project — the same as the Asset Library tab in Godot's project manager.
-- **New project**: Forward+ / Mobile / Compatibility renderer, optional Git setup.
+- **New project**: the same "Create New Project" window as Godot's project manager — project name, path with
+  "Create Folder", renderer (Forward+ / Mobile / Compatibility) with its description, version control metadata (Git),
+  plus the editor version to create it with.
 - **Languages**: every language the Godot editor supports (39) plus Korean. It follows the system language by default
   and can be changed in Settings. Arabic, Persian and Hebrew use a right-to-left layout.
 - **Windows**: dialogs such as Settings, New Project and Install Editor open as separate windows you can move anywhere.
@@ -101,6 +103,7 @@ Each test is a scene run headless, for example:
 | `tests/test_project_ops.tscn` | Rename, tags, duplicate, remove missing |
 | `tests/test_editor_settings.tscn` | Hub settings window: reading, saving values and shortcuts, creating the settings file |
 | `tests/test_templates.tscn` | Installing and removing export templates (real download) |
+| `tests/test_new_project.tscn` | Creating projects from the New Project window |
 | `tests/test_asset.tscn` | Downloading an Asset Library project and adding it (real download) |
 
 ## Structure

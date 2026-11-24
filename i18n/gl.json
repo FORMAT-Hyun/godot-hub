@@ -333,6 +333,21 @@
 "Autor",
 "Categoría",
 "Licenza",
-"Engadir como proxecto"
+"Engadir como proxecto",
+"• Só admite plataformas de escritorio.\n• Gráficos 3D avanzados dispoñibles.\n• Escala a escenas grandes e complexas.\n• Usa o backend RenderingDevice.\n• Renderizado máis lento de escenas simples.",
+"• Admite plataformas de escritorio + móbiles.\n• Gráficos 3D menos avanzados.\n• Menos escalable para escenas complexas.\n• Usa o backend RenderingDevice.\n• Renderizado rápido de escenas simples.",
+"• Admite plataformas de escritorio, móbiles + web.\n• Os gráficos 3D máis básicos.\n• Pensado para equipos modestos/antigos.\n• Usa o backend OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• O renderizado máis rápido de escenas simples.",
+"Crear e editar",
+"Versión do editor:",
+"Nome do proxecto:",
+"Ruta do proxecto:",
+"Crear cartafol",
+"Renderizador:",
+"O renderizador pódese cambiar máis tarde, pero quizais haxa que axustar as escenas.",
+"Metadatos do control de versións:",
+"Novo proxecto de xogo",
+"O cartafol seleccionado non está baleiro.",
+"O cartafol do proxecto crearase automaticamente.",
+"O proxecto crearase no cartafol seleccionado."
 ]
 }

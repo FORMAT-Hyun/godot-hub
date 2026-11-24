@@ -333,6 +333,21 @@
 "Upphovsperson",
 "Kategori",
 "Licens",
-"Lägg till som projekt"
+"Lägg till som projekt",
+"• Stöder endast skrivbordsplattformar.\n• Avancerad 3D-grafik finns.\n• Skalar till stora, komplexa scener.\n• Använder RenderingDevice-backend.\n• Långsammare rendering av enkla scener.",
+"• Stöder skrivbords- + mobilplattformar.\n• Mindre avancerad 3D-grafik.\n• Skalar sämre till komplexa scener.\n• Använder RenderingDevice-backend.\n• Snabb rendering av enkla scener.",
+"• Stöder skrivbords-, mobil- + webbplattformar.\n• Enklast 3D-grafik.\n• Avsedd för svaga/äldre enheter.\n• Använder OpenGL 3-backend (OpenGL 3.3/ES 3.0/WebGL2).\n• Snabbast rendering av enkla scener.",
+"Skapa och redigera",
+"Redigerarversion:",
+"Projektnamn:",
+"Projektsökväg:",
+"Skapa mapp",
+"Renderare:",
+"Renderaren kan ändras senare, men scener kan behöva justeras.",
+"Metadata för versionshantering:",
+"Nytt spelprojekt",
+"Den valda mappen är inte tom.",
+"Projektmappen skapas automatiskt.",
+"Projektet skapas i den valda mappen."
 ]
 }

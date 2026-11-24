@@ -333,6 +333,21 @@
 "Autor",
 "Categoria",
 "Licença",
-"Adicionar como projeto"
+"Adicionar como projeto",
+"• Suporta apenas plataformas desktop.\n• Gráficos 3D avançados disponíveis.\n• Escala para cenas grandes e complexas.\n• Usa o backend RenderingDevice.\n• Renderização mais lenta de cenas simples.",
+"• Suporta plataformas desktop + mobile.\n• Gráficos 3D menos avançados.\n• Menos escalável para cenas complexas.\n• Usa o backend RenderingDevice.\n• Renderização rápida de cenas simples.",
+"• Suporta plataformas desktop, mobile + web.\n• Gráficos 3D mais básicos.\n• Feito para aparelhos fracos/antigos.\n• Usa o backend OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• Renderização mais rápida de cenas simples.",
+"Criar e editar",
+"Versão do editor:",
+"Nome do projeto:",
+"Caminho do projeto:",
+"Criar pasta",
+"Renderizador:",
+"O renderizador pode ser trocado depois, mas talvez seja preciso ajustar as cenas.",
+"Metadados de controle de versão:",
+"Novo projeto de jogo",
+"A pasta selecionada não está vazia.",
+"A pasta do projeto será criada automaticamente.",
+"O projeto será criado na pasta selecionada."
 ]
 }

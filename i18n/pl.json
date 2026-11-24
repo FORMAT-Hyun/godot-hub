@@ -333,6 +333,21 @@
 "Autor",
 "Kategoria",
 "Licencja",
-"Dodaj jako projekt"
+"Dodaj jako projekt",
+"• Obsługuje tylko platformy desktopowe.\n• Dostępna zaawansowana grafika 3D.\n• Skaluje się do dużych, złożonych scen.\n• Używa backendu RenderingDevice.\n• Wolniejsze renderowanie prostych scen.",
+"• Obsługuje platformy desktopowe + mobilne.\n• Mniej zaawansowana grafika 3D.\n• Gorzej skaluje się do złożonych scen.\n• Używa backendu RenderingDevice.\n• Szybkie renderowanie prostych scen.",
+"• Obsługuje platformy desktopowe, mobilne + web.\n• Najprostsza grafika 3D.\n• Przeznaczony dla słabszych/starszych urządzeń.\n• Używa backendu OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• Najszybsze renderowanie prostych scen.",
+"Utwórz i edytuj",
+"Wersja edytora:",
+"Nazwa projektu:",
+"Ścieżka projektu:",
+"Utwórz folder",
+"Renderer:",
+"Renderer można później zmienić, ale może być konieczne dostosowanie scen.",
+"Metadane kontroli wersji:",
+"Nowy projekt gry",
+"Wybrany folder nie jest pusty.",
+"Folder projektu zostanie utworzony automatycznie.",
+"Projekt zostanie utworzony w wybranym folderze."
 ]
 }

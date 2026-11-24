@@ -333,6 +333,21 @@
 "Autor",
 "Categoria",
 "Llicència",
-"Afegeix com a projecte"
+"Afegeix com a projecte",
+"• Només admet plataformes d'escriptori.\n• Gràfics 3D avançats disponibles.\n• Escala a escenes grans i complexes.\n• Fa servir el backend RenderingDevice.\n• Renderització més lenta d'escenes simples.",
+"• Admet plataformes d'escriptori + mòbils.\n• Gràfics 3D menys avançats.\n• Menys escalable per a escenes complexes.\n• Fa servir el backend RenderingDevice.\n• Renderització ràpida d'escenes simples.",
+"• Admet plataformes d'escriptori, mòbils + web.\n• Els gràfics 3D més bàsics.\n• Pensat per a dispositius modestos/antics.\n• Fa servir el backend OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• La renderització més ràpida d'escenes simples.",
+"Crea i edita",
+"Versió de l'editor:",
+"Nom del projecte:",
+"Camí del projecte:",
+"Crea una carpeta",
+"Renderitzador:",
+"El renderitzador es pot canviar més tard, però potser caldrà ajustar les escenes.",
+"Metadades del control de versions:",
+"Projecte de joc nou",
+"La carpeta seleccionada no és buida.",
+"La carpeta del projecte es crearà automàticament.",
+"El projecte es crearà a la carpeta seleccionada."
 ]
 }

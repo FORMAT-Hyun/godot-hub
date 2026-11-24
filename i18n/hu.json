@@ -333,6 +333,21 @@
 "Szerző",
 "Kategória",
 "Licenc",
-"Hozzáadás projektként"
+"Hozzáadás projektként",
+"• Csak asztali platformokat támogat.\n• Fejlett 3D grafika érhető el.\n• Nagy, összetett jelenetekhez is skálázható.\n• A RenderingDevice háttérrendszert használja.\n• Az egyszerű jeleneteket lassabban rendereli.",
+"• Asztali + mobil platformokat támogat.\n• Kevésbé fejlett 3D grafika.\n• Összetett jelenetekhez kevésbé skálázható.\n• A RenderingDevice háttérrendszert használja.\n• Az egyszerű jeleneteket gyorsan rendereli.",
+"• Asztali, mobil + webes platformokat támogat.\n• A legegyszerűbb 3D grafika.\n• Gyengébb/régebbi eszközökre készült.\n• Az OpenGL 3 háttérrendszert használja (OpenGL 3.3/ES 3.0/WebGL2).\n• Az egyszerű jeleneteket a leggyorsabban rendereli.",
+"Létrehozás és szerkesztés",
+"Szerkesztő verziója:",
+"Projekt neve:",
+"Projekt útvonala:",
+"Mappa létrehozása",
+"Renderelő:",
+"A renderelő később módosítható, de a jeleneteket lehet, hogy igazítani kell.",
+"Verziókezelési metaadatok:",
+"Új játékprojekt",
+"A kiválasztott mappa nem üres.",
+"A projektmappa automatikusan létrejön.",
+"A projekt a kiválasztott mappában jön létre."
 ]
 }

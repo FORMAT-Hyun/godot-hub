@@ -333,6 +333,21 @@
 "Aŭtoro",
 "Kategorio",
 "Permesilo",
-"Aldoni kiel projekton"
+"Aldoni kiel projekton",
+"• Subtenas nur labortablajn platformojn.\n• Disponeblas altnivela 3D-grafiko.\n• Skaliĝas al grandaj kompleksaj scenoj.\n• Uzas la RenderingDevice-internaĵon.\n• Pli malrapida bildigo de simplaj scenoj.",
+"• Subtenas labortablajn + poŝtelefonajn platformojn.\n• Malpli altnivela 3D-grafiko.\n• Malpli skalebla por kompleksaj scenoj.\n• Uzas la RenderingDevice-internaĵon.\n• Rapida bildigo de simplaj scenoj.",
+"• Subtenas labortablajn, poŝtelefonajn + retajn platformojn.\n• La plej simpla 3D-grafiko.\n• Celita por malfortaj/malnovaj aparatoj.\n• Uzas la OpenGL 3-internaĵon (OpenGL 3.3/ES 3.0/WebGL2).\n• La plej rapida bildigo de simplaj scenoj.",
+"Krei kaj redakti",
+"Redaktila versio:",
+"Projekta nomo:",
+"Projekta vojo:",
+"Krei dosierujon",
+"Bildigilo:",
+"La bildigilo ŝanĝeblas poste, sed eble necesos alĝustigi la scenojn.",
+"Versikontrolaj metadatumoj:",
+"Nova luda projekto",
+"La elektita dosierujo ne estas malplena.",
+"La projekta dosierujo kreiĝos aŭtomate.",
+"La projekto kreiĝos en la elektita dosierujo."
 ]
 }

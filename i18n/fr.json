@@ -333,6 +333,21 @@
 "Auteur",
 "Catégorie",
 "Licence",
-"Ajouter comme projet"
+"Ajouter comme projet",
+"• Prend en charge uniquement les plateformes de bureau.\n• Graphismes 3D avancés disponibles.\n• Peut gérer de grandes scènes complexes.\n• Utilise le backend RenderingDevice.\n• Rendu plus lent des scènes simples.",
+"• Prend en charge les plateformes de bureau + mobiles.\n• Graphismes 3D moins avancés.\n• Moins adapté aux scènes complexes.\n• Utilise le backend RenderingDevice.\n• Rendu rapide des scènes simples.",
+"• Prend en charge les plateformes de bureau, mobiles + web.\n• Graphismes 3D les plus simples.\n• Conçu pour les appareils modestes/anciens.\n• Utilise le backend OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• Rendu le plus rapide des scènes simples.",
+"Créer et modifier",
+"Version de l'éditeur :",
+"Nom du projet :",
+"Chemin du projet :",
+"Créer un dossier",
+"Moteur de rendu :",
+"Le moteur de rendu peut être changé plus tard, mais les scènes devront peut-être être ajustées.",
+"Métadonnées de gestion de versions :",
+"Nouveau projet de jeu",
+"Le dossier sélectionné n'est pas vide.",
+"Le dossier du projet sera créé automatiquement.",
+"Le projet sera créé dans le dossier sélectionné."
 ]
 }

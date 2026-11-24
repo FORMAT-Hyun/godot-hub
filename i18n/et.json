@@ -333,6 +333,21 @@
 "Autor",
 "Kategooria",
 "Litsents",
-"Lisa projektina"
+"Lisa projektina",
+"• Toetab ainult lauaarvuti platvorme.\n• Saadaval on täiustatud 3D-graafika.\n• Skaleerub suurtele keerukatele stseenidele.\n• Kasutab RenderingDevice'i tagaprogrammi.\n• Lihtsate stseenide renderdamine on aeglasem.",
+"• Toetab lauaarvuti + mobiiliplatvorme.\n• Vähem täiustatud 3D-graafika.\n• Keerukatele stseenidele halvemini skaleeruv.\n• Kasutab RenderingDevice'i tagaprogrammi.\n• Lihtsate stseenide kiire renderdamine.",
+"• Toetab lauaarvuti, mobiili + veebi platvorme.\n• Kõige lihtsam 3D-graafika.\n• Mõeldud nõrkadele/vanadele seadmetele.\n• Kasutab OpenGL 3 tagaprogrammi (OpenGL 3.3/ES 3.0/WebGL2).\n• Lihtsate stseenide kiireim renderdamine.",
+"Loo ja muuda",
+"Redaktori versioon:",
+"Projekti nimi:",
+"Projekti tee:",
+"Loo kaust",
+"Renderdaja:",
+"Renderdajat saab hiljem muuta, kuid stseene võib olla vaja kohandada.",
+"Versioonihalduse metaandmed:",
+"Uus mänguprojekt",
+"Valitud kaust pole tühi.",
+"Projekti kaust luuakse automaatselt.",
+"Projekt luuakse valitud kausta."
 ]
 }

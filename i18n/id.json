@@ -333,6 +333,21 @@
 "Pembuat",
 "Kategori",
 "Lisensi",
-"Tambah sebagai Proyek"
+"Tambah sebagai Proyek",
+"• Hanya mendukung platform desktop.\n• Grafis 3D tingkat lanjut tersedia.\n• Dapat menangani adegan besar dan kompleks.\n• Memakai backend RenderingDevice.\n• Render adegan sederhana lebih lambat.",
+"• Mendukung platform desktop + seluler.\n• Grafis 3D kurang canggih.\n• Kurang skalabel untuk adegan kompleks.\n• Memakai backend RenderingDevice.\n• Render adegan sederhana cepat.",
+"• Mendukung platform desktop, seluler + web.\n• Grafis 3D paling sederhana.\n• Ditujukan untuk perangkat rendah/lama.\n• Memakai backend OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• Render adegan sederhana paling cepat.",
+"Buat & Sunting",
+"Versi editor:",
+"Nama Proyek:",
+"Jalur Proyek:",
+"Buat Folder",
+"Perender:",
+"Perender bisa diganti nanti, tetapi adegan mungkin perlu disesuaikan.",
+"Metadata Kontrol Versi:",
+"Proyek Game Baru",
+"Folder yang dipilih tidak kosong.",
+"Folder proyek akan dibuat otomatis.",
+"Proyek akan dibuat di folder yang dipilih."
 ]
 }

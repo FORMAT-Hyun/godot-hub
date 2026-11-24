@@ -333,6 +333,21 @@
 "Tác giả",
 "Danh mục",
 "Giấy phép",
-"Thêm làm dự án"
+"Thêm làm dự án",
+"• Chỉ hỗ trợ nền tảng máy tính.\n• Có đồ họa 3D nâng cao.\n• Mở rộng được cho cảnh lớn và phức tạp.\n• Dùng backend RenderingDevice.\n• Kết xuất cảnh đơn giản chậm hơn.",
+"• Hỗ trợ nền tảng máy tính + di động.\n• Đồ họa 3D kém nâng cao hơn.\n• Khó mở rộng cho cảnh phức tạp.\n• Dùng backend RenderingDevice.\n• Kết xuất cảnh đơn giản nhanh.",
+"• Hỗ trợ nền tảng máy tính, di động + web.\n• Đồ họa 3D đơn giản nhất.\n• Dành cho thiết bị yếu/cũ.\n• Dùng backend OpenGL 3 (OpenGL 3.3/ES 3.0/WebGL2).\n• Kết xuất cảnh đơn giản nhanh nhất.",
+"Tạo và chỉnh sửa",
+"Phiên bản trình chỉnh sửa:",
+"Tên dự án:",
+"Đường dẫn dự án:",
+"Tạo thư mục",
+"Trình kết xuất:",
+"Có thể đổi trình kết xuất sau, nhưng có thể phải chỉnh lại các cảnh.",
+"Siêu dữ liệu quản lý phiên bản:",
+"Dự án trò chơi mới",
+"Thư mục đã chọn không trống.",
+"Thư mục dự án sẽ được tạo tự động.",
+"Dự án sẽ được tạo trong thư mục đã chọn."
 ]
 }

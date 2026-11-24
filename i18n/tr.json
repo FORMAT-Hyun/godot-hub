@@ -333,6 +333,21 @@
 "Yazar",
 "Kategori",
 "Lisans",
-"Proje Olarak Ekle"
+"Proje Olarak Ekle",
+"• Yalnızca masaüstü platformları destekler.\n• Gelişmiş 3D grafikler kullanılabilir.\n• Büyük ve karmaşık sahnelere ölçeklenebilir.\n• RenderingDevice arka ucunu kullanır.\n• Basit sahneleri daha yavaş işler.",
+"• Masaüstü + mobil platformları destekler.\n• Daha az gelişmiş 3D grafikler.\n• Karmaşık sahnelerde daha az ölçeklenebilir.\n• RenderingDevice arka ucunu kullanır.\n• Basit sahneleri hızlı işler.",
+"• Masaüstü, mobil + web platformlarını destekler.\n• En basit 3D grafikler.\n• Düşük donanımlı/eski cihazlar için.\n• OpenGL 3 arka ucunu kullanır (OpenGL 3.3/ES 3.0/WebGL2).\n• Basit sahneleri en hızlı işler.",
+"Oluştur ve Düzenle",
+"Düzenleyici sürümü:",
+"Proje Adı:",
+"Proje Yolu:",
+"Klasör Oluştur",
+"Oluşturucu:",
+"Oluşturucu daha sonra değiştirilebilir, ancak sahnelerin ayarlanması gerekebilir.",
+"Sürüm Denetimi Üst Verisi:",
+"Yeni Oyun Projesi",
+"Seçilen klasör boş değil.",
+"Proje klasörü otomatik olarak oluşturulacak.",
+"Proje seçilen klasörde oluşturulacak."
 ]
 }

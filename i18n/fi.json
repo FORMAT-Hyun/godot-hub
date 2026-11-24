@@ -333,6 +333,21 @@
 "Tekijä",
 "Luokka",
 "Lisenssi",
-"Lisää projektina"
+"Lisää projektina",
+"• Tukee vain työpöytäalustoja.\n• Edistynyt 3D-grafiikka käytettävissä.\n• Skaalautuu suuriin ja monimutkaisiin kohtauksiin.\n• Käyttää RenderingDevice-taustaa.\n• Yksinkertaisten kohtausten renderöinti on hitaampaa.",
+"• Tukee työpöytä- + mobiilialustoja.\n• Vähemmän edistynyt 3D-grafiikka.\n• Skaalautuu huonommin monimutkaisiin kohtauksiin.\n• Käyttää RenderingDevice-taustaa.\n• Renderöi yksinkertaiset kohtaukset nopeasti.",
+"• Tukee työpöytä-, mobiili- + verkkoalustoja.\n• Yksinkertaisin 3D-grafiikka.\n• Tarkoitettu heikoille/vanhoille laitteille.\n• Käyttää OpenGL 3 -taustaa (OpenGL 3.3/ES 3.0/WebGL2).\n• Renderöi yksinkertaiset kohtaukset nopeimmin.",
+"Luo ja muokkaa",
+"Editorin versio:",
+"Projektin nimi:",
+"Projektin polku:",
+"Luo kansio",
+"Renderöijä:",
+"Renderöijän voi vaihtaa myöhemmin, mutta kohtauksia voi joutua säätämään.",
+"Versionhallinnan metatiedot:",
+"Uusi peliprojekti",
+"Valittu kansio ei ole tyhjä.",
+"Projektikansio luodaan automaattisesti.",
+"Projekti luodaan valittuun kansioon."
 ]
 }
