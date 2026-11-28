@@ -351,6 +351,17 @@
 "Projekt se vytvoří ve vybrané složce.",
 "• Vyšší vizuální kvalita\n• Dostupné všechny funkce\n• Nekompatibilní se starším hardwarem\n• Nedoporučeno pro webové hry",
 "• Nižší vizuální kvalita\n• Některé funkce nejsou k dispozici\n• Funguje na většině hardwaru\n• Doporučeno pro webové hry",
-"S Godot 2 nebo starším nelze vytvářet nové projekty. Vyberte Godot 3 nebo novější."
+"S Godot 2 nebo starším nelze vytvářet nové projekty. Vyberte Godot 3 nebo novější.",
+"O aplikaci Godot Hub",
+"Spouštěč, který na jednom místě spravuje vaše projekty Godot Engine a verze editoru.",
+"Sestaveno v",
+"Poznámky k vydání",
+"Nahlásit problém",
+"Licence třetích stran",
+"Neoficiální program. Název a logo Godot jsou ochranné známky Godot Foundation.",
+"Hledání aktualizací...",
+"Aktualizace se nepodařilo zkontrolovat.",
+"Je k dispozici nová verze %s.",
+"Máte nejnovější verzi."
 ]
 }

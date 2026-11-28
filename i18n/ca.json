@@ -351,6 +351,17 @@
 "El projecte es crearà a la carpeta seleccionada.",
 "• Més qualitat visual\n• Totes les funcions disponibles\n• Incompatible amb maquinari antic\n• No recomanat per a jocs web",
 "• Menys qualitat visual\n• Algunes funcions no disponibles\n• Funciona a la majoria de maquinari\n• Recomanat per a jocs web",
-"No es poden crear projectes nous amb Godot 2 o anterior. Tria Godot 3 o posterior."
+"No es poden crear projectes nous amb Godot 2 o anterior. Tria Godot 3 o posterior.",
+"Quant a Godot Hub",
+"Un llançador que gestiona els teus projectes de Godot Engine i les versions de l'editor en un sol lloc.",
+"Fet amb",
+"Notes de la versió",
+"Informa d'un problema",
+"Llicències de tercers",
+"Programa no oficial. El nom i el logotip de Godot són marques de la Godot Foundation.",
+"S'estan cercant actualitzacions...",
+"No s'han pogut cercar actualitzacions.",
+"La nova versió %s està disponible.",
+"Estàs al dia."
 ]
 }

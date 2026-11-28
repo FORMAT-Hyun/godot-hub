@@ -351,6 +351,17 @@
 "Proyek akan dibuat di folder yang dipilih.",
 "• Kualitas visual lebih tinggi\n• Semua fitur tersedia\n• Tidak kompatibel dengan perangkat keras lama\n• Tidak disarankan untuk game web",
 "• Kualitas visual lebih rendah\n• Beberapa fitur tidak tersedia\n• Berjalan di sebagian besar perangkat keras\n• Disarankan untuk game web",
-"Proyek baru tidak bisa dibuat dengan Godot 2 atau lebih lama. Silakan pilih Godot 3 atau lebih baru."
+"Proyek baru tidak bisa dibuat dengan Godot 2 atau lebih lama. Silakan pilih Godot 3 atau lebih baru.",
+"Tentang Godot Hub",
+"Peluncur yang mengelola proyek Godot Engine dan versi editor Anda di satu tempat.",
+"Dibuat dengan",
+"Catatan rilis",
+"Laporkan masalah",
+"Lisensi pihak ketiga",
+"Program tidak resmi. Nama dan logo Godot adalah merek dagang Godot Foundation.",
+"Memeriksa pembaruan...",
+"Tidak dapat memeriksa pembaruan.",
+"Versi baru %s tersedia.",
+"Anda sudah memakai versi terbaru."
 ]
 }

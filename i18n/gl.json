@@ -351,6 +351,17 @@
 "O proxecto crearase no cartafol seleccionado.",
 "• Maior calidade visual\n• Todas as funcións dispoñibles\n• Incompatible con hardware antigo\n• Non recomendado para xogos web",
 "• Menor calidade visual\n• Algunhas funcións non dispoñibles\n• Funciona na maioría do hardware\n• Recomendado para xogos web",
-"Non se poden crear proxectos novos con Godot 2 ou anterior. Escolle Godot 3 ou posterior."
+"Non se poden crear proxectos novos con Godot 2 ou anterior. Escolle Godot 3 ou posterior.",
+"Acerca de Godot Hub",
+"Un iniciador que xestiona os teus proxectos de Godot Engine e as versións do editor nun só lugar.",
+"Feito con",
+"Notas da versión",
+"Informar dun problema",
+"Licenzas de terceiros",
+"Programa non oficial. O nome e o logotipo de Godot son marcas da Godot Foundation.",
+"Buscando actualizacións...",
+"Non se puideron buscar actualizacións.",
+"A nova versión %s está dispoñible.",
+"Estás ao día."
 ]
 }

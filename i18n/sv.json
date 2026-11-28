@@ -351,6 +351,17 @@
 "Projektet skapas i den valda mappen.",
 "• Högre bildkvalitet\n• Alla funktioner tillgängliga\n• Inte kompatibel med äldre hårdvara\n• Rekommenderas inte för webbspel",
 "• Lägre bildkvalitet\n• Vissa funktioner saknas\n• Fungerar på det mesta av hårdvara\n• Rekommenderas för webbspel",
-"Nya projekt kan inte skapas med Godot 2 eller äldre. Välj Godot 3 eller nyare."
+"Nya projekt kan inte skapas med Godot 2 eller äldre. Välj Godot 3 eller nyare.",
+"Om Godot Hub",
+"En startare som hanterar dina Godot Engine-projekt och editorversioner på ett ställe.",
+"Byggd med",
+"Versionsinformation",
+"Rapportera ett problem",
+"Tredjepartslicenser",
+"Inofficiellt program. Namnet och logotypen Godot är varumärken som tillhör Godot Foundation.",
+"Söker efter uppdateringar...",
+"Det gick inte att söka efter uppdateringar.",
+"Ny version %s finns tillgänglig.",
+"Du har den senaste versionen."
 ]
 }

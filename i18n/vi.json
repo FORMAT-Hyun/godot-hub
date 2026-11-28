@@ -351,6 +351,17 @@
 "Dự án sẽ được tạo trong thư mục đã chọn.",
 "• Chất lượng hình ảnh cao hơn\n• Có đủ mọi tính năng\n• Không tương thích phần cứng cũ\n• Không khuyến nghị cho trò chơi web",
 "• Chất lượng hình ảnh thấp hơn\n• Một số tính năng không có\n• Chạy trên hầu hết phần cứng\n• Khuyến nghị cho trò chơi web",
-"Không thể tạo dự án mới bằng Godot 2 trở về trước. Hãy chọn Godot 3 trở lên."
+"Không thể tạo dự án mới bằng Godot 2 trở về trước. Hãy chọn Godot 3 trở lên.",
+"Giới thiệu Godot Hub",
+"Trình khởi chạy quản lý các dự án Godot Engine và phiên bản trình chỉnh sửa ở cùng một nơi.",
+"Xây dựng bằng",
+"Ghi chú phát hành",
+"Báo cáo sự cố",
+"Giấy phép bên thứ ba",
+"Chương trình không chính thức. Tên và logo Godot là nhãn hiệu của Godot Foundation.",
+"Đang kiểm tra cập nhật...",
+"Không thể kiểm tra cập nhật.",
+"Đã có phiên bản mới %s.",
+"Bạn đang dùng bản mới nhất."
 ]
 }

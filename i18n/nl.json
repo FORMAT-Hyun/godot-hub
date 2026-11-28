@@ -351,6 +351,17 @@
 "Het project wordt in de geselecteerde map gemaakt.",
 "• Hogere beeldkwaliteit\n• Alle functies beschikbaar\n• Niet compatibel met oudere hardware\n• Niet aanbevolen voor webgames",
 "• Lagere beeldkwaliteit\n• Sommige functies niet beschikbaar\n• Werkt op de meeste hardware\n• Aanbevolen voor webgames",
-"Met Godot 2 of ouder kunnen geen nieuwe projecten worden gemaakt. Kies Godot 3 of nieuwer."
+"Met Godot 2 of ouder kunnen geen nieuwe projecten worden gemaakt. Kies Godot 3 of nieuwer.",
+"Over Godot Hub",
+"Een launcher die je Godot Engine-projecten en editorversies op één plek beheert.",
+"Gemaakt met",
+"Release-opmerkingen",
+"Probleem melden",
+"Licenties van derden",
+"Onofficieel programma. De naam en het logo van Godot zijn handelsmerken van de Godot Foundation.",
+"Zoeken naar updates...",
+"Kon niet naar updates zoeken.",
+"Nieuwe versie %s is beschikbaar.",
+"Je bent up-to-date."
 ]
 }

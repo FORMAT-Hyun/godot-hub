@@ -351,6 +351,17 @@
 "Projekt luuakse valitud kausta.",
 "• Parem pildikvaliteet\n• Kõik funktsioonid saadaval\n• Ei ühildu vanema riistvaraga\n• Ei soovitata veebimängudele",
 "• Madalam pildikvaliteet\n• Mõned funktsioonid pole saadaval\n• Töötab enamikul riistvaral\n• Soovitatav veebimängudele",
-"Godot 2 või vanemaga ei saa uusi projekte luua. Vali Godot 3 või uuem."
+"Godot 2 või vanemaga ei saa uusi projekte luua. Vali Godot 3 või uuem.",
+"Teave Godot Hubi kohta",
+"Käivitaja, mis haldab sinu Godot Engine'i projekte ja redaktori versioone ühes kohas.",
+"Tehtud versiooniga",
+"Väljalaske märkmed",
+"Teata probleemist",
+"Kolmandate osapoolte litsentsid",
+"Mitteametlik programm. Godot nimi ja logo on Godot Foundationi kaubamärgid.",
+"Uuenduste otsimine...",
+"Uuendusi ei õnnestunud kontrollida.",
+"Uus versioon %s on saadaval.",
+"Sul on uusim versioon."
 ]
 }

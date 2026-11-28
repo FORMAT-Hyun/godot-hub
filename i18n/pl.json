@@ -351,6 +351,17 @@
 "Projekt zostanie utworzony w wybranym folderze.",
 "• Wyższa jakość obrazu\n• Wszystkie funkcje dostępne\n• Niezgodny ze starszym sprzętem\n• Niezalecany do gier webowych",
 "• Niższa jakość obrazu\n• Niektóre funkcje niedostępne\n• Działa na większości sprzętu\n• Zalecany do gier webowych",
-"Nie można tworzyć nowych projektów w Godot 2 lub starszym. Wybierz Godot 3 lub nowszy."
+"Nie można tworzyć nowych projektów w Godot 2 lub starszym. Wybierz Godot 3 lub nowszy.",
+"O Godot Hub",
+"Launcher, który zarządza projektami Godot Engine i wersjami edytora w jednym miejscu.",
+"Zbudowano w",
+"Informacje o wydaniu",
+"Zgłoś problem",
+"Licencje stron trzecich",
+"Nieoficjalny program. Nazwa i logo Godot są znakami towarowymi Godot Foundation.",
+"Sprawdzanie aktualizacji...",
+"Nie udało się sprawdzić aktualizacji.",
+"Dostępna jest nowa wersja %s.",
+"Masz najnowszą wersję."
 ]
 }

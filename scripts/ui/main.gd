@@ -15,6 +15,7 @@ var _toast: PanelContainer
 var _toast_label: Label
 var _toast_tween: Tween
 var _settings_dialog: SettingsDialog
+var _about_dialog: AboutDialog
 
 
 func _ready() -> void:
@@ -64,6 +65,8 @@ func _ready() -> void:
 			_pages.installs.open_install_dialog()
 		"settings":
 			_open_settings()
+		"about":
+			_open_about()
 		"properties":
 			if not Hub.installs.is_empty():
 				_pages.installs._show_properties(Hub.sorted_installs()[0])
@@ -98,7 +101,17 @@ func _build() -> void:
 	var sh := HBoxContainer.new()
 	status.add_child(sh)
 	sh.add_child(HubUI.spacer())
-	sh.add_child(HubUI.label("Godot Hub v" + Hub.HUB_VERSION, "DimLabel"))
+	# 버전을 누르면 정보 창
+	var ver_btn := Button.new()
+	ver_btn.text = "Godot Hub v" + Hub.HUB_VERSION
+	ver_btn.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	ver_btn.theme_type_variation = "FlatButton"
+	ver_btn.focus_mode = Control.FOCUS_NONE
+	ver_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	ver_btn.add_theme_font_size_override("font_size", 12)
+	ver_btn.add_theme_color_override("font_color", HubTheme.TEXT_DIM)
+	ver_btn.pressed.connect(_open_about)
+	sh.add_child(ver_btn)
 	root.add_child(status)
 
 	# 다운로드 진행 상황은 왼쪽 아래에 떠 있게
@@ -236,6 +249,13 @@ func _open_settings() -> void:
 		_settings_dialog = SettingsDialog.new()
 		add_child(_settings_dialog)
 	_settings_dialog.popup_centered()
+
+
+func _open_about() -> void:
+	if _about_dialog == null:
+		_about_dialog = AboutDialog.new()
+		add_child(_about_dialog)
+	_about_dialog.popup_centered()
 
 
 func _on_files_dropped(files: PackedStringArray) -> void:

@@ -351,6 +351,17 @@
 "Proiectul va fi creat în folderul selectat.",
 "• Calitate vizuală mai bună\n• Toate funcțiile disponibile\n• Incompatibil cu hardware vechi\n• Nerecomandat pentru jocuri web",
 "• Calitate vizuală mai slabă\n• Unele funcții nu sunt disponibile\n• Funcționează pe majoritatea hardware-ului\n• Recomandat pentru jocuri web",
-"Nu se pot crea proiecte noi cu Godot 2 sau mai vechi. Alege Godot 3 sau mai nou."
+"Nu se pot crea proiecte noi cu Godot 2 sau mai vechi. Alege Godot 3 sau mai nou.",
+"Despre Godot Hub",
+"Un lansator care gestionează proiectele Godot Engine și versiunile editorului într-un singur loc.",
+"Construit cu",
+"Note de lansare",
+"Raportează o problemă",
+"Licențe terțe",
+"Program neoficial. Numele și logo-ul Godot sunt mărci ale Godot Foundation.",
+"Se caută actualizări...",
+"Nu s-au putut căuta actualizări.",
+"Versiunea nouă %s este disponibilă.",
+"Ai cea mai nouă versiune."
 ]
 }

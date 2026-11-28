@@ -351,6 +351,17 @@
 "A projekt a kiválasztott mappában jön létre.",
 "• Jobb képminőség\n• Minden funkció elérhető\n• Régebbi hardverrel nem kompatibilis\n• Webes játékokhoz nem ajánlott",
 "• Gyengébb képminőség\n• Néhány funkció nem érhető el\n• A legtöbb hardveren működik\n• Webes játékokhoz ajánlott",
-"Godot 2-vel vagy régebbivel nem hozható létre új projekt. Válassz Godot 3-at vagy újabbat."
+"Godot 2-vel vagy régebbivel nem hozható létre új projekt. Válassz Godot 3-at vagy újabbat.",
+"A Godot Hub névjegye",
+"Indító, amely egy helyen kezeli a Godot Engine-projektjeidet és a szerkesztő verzióit.",
+"Készült ezzel",
+"Kiadási megjegyzések",
+"Hiba bejelentése",
+"Harmadik féltől származó licencek",
+"Nem hivatalos program. A Godot név és logó a Godot Foundation védjegye.",
+"Frissítések keresése...",
+"Nem sikerült frissítéseket keresni.",
+"Elérhető az új %s verzió.",
+"A legújabb verziót használod."
 ]
 }

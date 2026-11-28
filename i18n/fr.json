@@ -351,6 +351,17 @@
 "Le projet sera créé dans le dossier sélectionné.",
 "• Qualité visuelle supérieure\n• Toutes les fonctionnalités disponibles\n• Incompatible avec le matériel ancien\n• Déconseillé pour les jeux web",
 "• Qualité visuelle inférieure\n• Certaines fonctionnalités indisponibles\n• Fonctionne sur la plupart des matériels\n• Recommandé pour les jeux web",
-"Impossible de créer un nouveau projet avec Godot 2 ou antérieur. Choisissez Godot 3 ou plus récent."
+"Impossible de créer un nouveau projet avec Godot 2 ou antérieur. Choisissez Godot 3 ou plus récent.",
+"À propos de Godot Hub",
+"Un lanceur qui gère vos projets Godot Engine et vos versions de l'éditeur en un seul endroit.",
+"Conçu avec",
+"Notes de version",
+"Signaler un problème",
+"Licences tierces",
+"Programme non officiel. Le nom et le logo Godot sont des marques de la Godot Foundation.",
+"Recherche de mises à jour...",
+"Impossible de vérifier les mises à jour.",
+"La nouvelle version %s est disponible.",
+"Vous êtes à jour."
 ]
 }
