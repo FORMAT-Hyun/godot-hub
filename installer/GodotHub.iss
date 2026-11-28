@@ -1,7 +1,11 @@
-; Godot Hub installer (Inno Setup 6)
-; Build: ISCC.exe installer\GodotHub.iss  (export build\GodotHub.exe first)
+﻿; Godot Hub installer (Inno Setup 6)
+; Build: ISCC.exe installer\GodotHub.iss  (export <BuildDir>\GodotHub.exe first)
+; Build output lives outside the source folder. Override with /DBuildDir=<folder>.
 
 #define AppName "Godot Hub"
+#ifndef BuildDir
+  #define BuildDir "D:\고도허브 빌드"
+#endif
 #ifndef AppVersion
   #define AppVersion "0.2.4"
 #endif
@@ -19,7 +23,7 @@ DisableProgramGroupPage=yes
 ; Install for the current user without admin rights (installing for all users is still offered)
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=..\build
+OutputDir={#BuildDir}
 OutputBaseFilename=GodotHub-{#AppVersion}-Setup
 SetupIconFile=icon.ico
 UninstallDisplayIcon={app}\GodotHub.exe
@@ -38,7 +42,7 @@ Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "..\build\GodotHub.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BuildDir}\GodotHub.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\GodotHub.exe"

@@ -65,16 +65,18 @@ Hub data is stored in `%APPDATA%\GodotHub\hub_data`, and editors are installed t
 ## Build the installer
 
 Requires the Godot 4.7 Windows export templates and [Inno Setup 6](https://jrsoftware.org/isinfo.php).
+Build output goes to a folder outside the source tree. The installer script reads it from `BuildDir`
+(default `D:\고도허브 빌드`; pass `/DBuildDir=<folder>` to ISCC to use another one).
 
 ```powershell
-& "<path>\Godot_v4.7-stable_win64_console.exe" --headless --path . --export-release "Windows Desktop" build\GodotHub.exe
+& "<path>\Godot_v4.7-stable_win64_console.exe" --headless --path . --export-release "Windows Desktop" "D:\고도허브 빌드\GodotHub.exe"
 ```
 
 ```powershell
 & "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe" installer\GodotHub.iss
 ```
 
-The installer is written to `build\GodotHub-<version>-Setup.exe`.
+The installer is written to `<BuildDir>\GodotHub-<version>-Setup.exe`.
 
 ## Translations
 
